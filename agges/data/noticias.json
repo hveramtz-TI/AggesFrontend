@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "titulo": "Inauguración de Nueva Planta de Tratamiento",
+    "fecha": "2026-01-10",
+    "categoria": "Infraestructura",
+    "descripcion": "Inauguramos nuestra nueva planta de tratamiento de residuos con tecnología de última generación, aumentando nuestra capacidad en un 40%.",
+    "imagen": "/noticias/planta.jpg",
+    "slug": "inauguracion-nueva-planta"
+  },
+  {
+    "id": 2,
+    "titulo": "Certificación ISO 14001 Obtenida",
+    "fecha": "2026-01-05",
+    "categoria": "Certificaciones",
+    "descripcion": "Hemos obtenido la certificación ISO 14001 en gestión ambiental, reafirmando nuestro compromiso con la sostenibilidad.",
+    "imagen": "/noticias/certificacion.jpg",
+    "slug": "certificacion-iso-14001"
+  },
+  {
+    "id": 3,
+    "titulo": "Expansión a Nuevas Regiones",
+    "fecha": "2025-12-28",
+    "categoria": "Expansión",
+    "descripcion": "Ampliamos nuestros servicios a tres nuevas regiones del país, alcanzando más empresas y comunidades.",
+    "imagen": "/noticias/expansion.jpg",
+    "slug": "expansion-nuevas-regiones"
+  },
+  {
+    "id": 4,
+    "titulo": "Premio a la Innovación Ambiental",
+    "fecha": "2025-12-20",
+    "categoria": "Reconocimientos",
+    "descripcion": "Fuimos reconocidos con el Premio Nacional de Innovación Ambiental por nuestras soluciones tecnológicas.",
+    "imagen": "/noticias/premio.jpg",
+    "slug": "premio-innovacion-ambiental"
+  },
+  {
+    "id": 5,
+    "titulo": "Programa de Capacitación 2026",
+    "fecha": "2025-12-15",
+    "categoria": "Educación",
+    "descripcion": "Lanzamos nuestro programa de capacitación gratuita en gestión de residuos para empresas y comunidades.",
+    "imagen": "/noticias/capacitacion.jpg",
+    "slug": "programa-capacitacion-2026"
+  },
+  {
+    "id": 6,
+    "titulo": "Reducción del 30% en Emisiones",
+    "fecha": "2025-12-10",
+    "categoria": "Sostenibilidad",
+    "descripcion": "Alcanzamos una reducción del 30% en emisiones de CO2 gracias a nuestra flota de vehículos eléctricos.",
+    "imagen": "/noticias/emisiones.jpg",
+    "slug": "reduccion-emisiones"
+  }
+]

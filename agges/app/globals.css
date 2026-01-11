@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
+@import "tailwindcss";
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Tipografías */
+  --font-primary: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-weight-bold: 700;
+  --font-weight-medium: 500;
+  
+  /* Paleta de Colores */
+  --color-primary: #83CA4A;
+  --color-white: #FFFFFF;
+  --color-light-gray: #EFEFEF;
+  --color-dark-gray: #383838;
+  --color-light-green: #F4FBEF;
+  
+  /* Next.js defaults */
+  --background: #ffffff;
+  --foreground: #383838;
+  
+  font-family: var(--font-primary);
+  line-height: 1.5;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-dark-gray);
+  background-color: var(--color-white);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-primary);
+  display: flex;
+  place-items: center;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+}
+
+/* h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+} */
+
+#root {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "icon": "📊",
+    "title": "Asesoría en Gestión de Reciclables",
+    "description": "Diseñamos e implementamos estrategias sostenibles para tu organización"
+  },
+  {
+    "id": 2,
+    "icon": "♻️",
+    "title": "Levantamiento y Segregación de Residuos",
+    "description": "Orden y limpieza en áreas industriales y operativas"
+  },
+  {
+    "id": 3,
+    "icon": "🧹",
+    "title": "Segregación y Acondicionamiento de Residuos",
+    "description": "Optimizamos residuos para su valorización y reciclaje"
+  },
+  {
+    "id": 4,
+    "icon": "🏭",
+    "title": "Administración de Instalaciones de Reciclaje",
+    "description": "Gestión eficiente y trazable de centros de reciclaje"
+  },
+  {
+    "id": 5,
+    "icon": "📦",
+    "title": "Arriendo de Contenedores para Segregación",
+    "description": "Soluciones prácticas para separar residuos en origen"
+  },
+  {
+    "id": 6,
+    "icon": "🚛",
+    "title": "Recogida, Transporte y Reciclaje de Residuos",
+    "description": "Gestión integral con foco en reciclaje efectivo"
+  },
+  {
+    "id": 7,
+    "icon": "🌍",
+    "title": "Economía Circular con Impacto Social",
+    "description": "Convertimos residuos en soluciones para la comunidad"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "Espacio Urbano",
+    "logo": "https://www.espaciourbano.cl/storage/images/20210722212344.png"
+  },
+  {
+    "id": 2,
+    "name": "Enaex",
+    "logo": "https://ecoed.cl/wp-content/uploads/2023/04/Enaex.png"
+  },
+  {
+    "id": 3,
+    "name": "Maxam",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR36bK7dp2tWvbnZESIFlwPZdXP5YgtfNyuHw&s"
+  },
+  {
+    "id": 4,
+    "name": "Liebherr",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Liebherr-Logo.svg/1200px-Liebherr-Logo.svg.png"
+  },
+  {
+    "id": 5,
+    "name": "EbCo",
+    "logo": "https://www.ebcoenergia.cl/wp-content/uploads/2023/03/logos-partners-ebco.png"
+  },
+  {
+    "id": 6,
+    "name": "CRC",
+    "logo": "https://crcconstructora.cl/img/crc_logo_color.png"
+  },
+  {
+    "id": 7,
+    "name": "Puerto Angamos",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzmEQUmeWi_755buK9553Kz8Wdqrc2QSxTQw&s"
+  },
+  {
+    "id": 8,
+    "name": "IM Epysa",
+    "logo": "https://play-lh.googleusercontent.com/SSM2bP4HVmAK7C28hGLiv3QNaslKUlwk2cKfIXaXvJysz4ANOAKWsNkWC_Xs4vlaR2o"
+  },
+  {
+    "id": 9,
+    "name": "FCAB",
+    "logo": "https://www.fcab.cl/wp-content/uploads/2020/09/cropped-logo.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Flanders",
+    "logo": "https://spanish.flandersinc.com/wp-content/uploads/sites/4/2017/10/FLANDERS_Logo.png"
+  }
+]

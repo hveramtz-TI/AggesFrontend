@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Energía",
+    "image": "⚡",
+    "description": "Gestión de residuos y reciclaje en plantas de generación y proyectos energéticos"
+  },
+  {
+    "id": 2,
+    "name": "Transporte",
+    "image": "🚛",
+    "description": "Segregación y valorización de residuos en operaciones logísticas y flotas"
+  },
+  {
+    "id": 3,
+    "name": "Portuario",
+    "image": "🚢",
+    "description": "Manejo de residuos industriales y operativos en terminales portuarios"
+  },
+  {
+    "id": 4,
+    "name": "Construcción",
+    "image": "🏗️",
+    "description": "Recuperación y reciclaje de materiales en obras y proyectos constructivos"
+  },
+  {
+    "id": 5,
+    "name": "Retail",
+    "image": "🏪",
+    "description": "Gestión integral de residuos comerciales y compromiso ambiental"
+  },
+  {
+    "id": 6,
+    "name": "Minería",
+    "image": "⛏️",
+    "description": "Reciclaje y valorización de residuos en operaciones mineras e industriales"
+  }
+]
