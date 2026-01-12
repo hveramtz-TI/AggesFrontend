@@ -48,9 +48,9 @@ export default function LoginPage() {
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-[var(--color-dark-gray)] px-4">
-      <div className="w-full max-w-[450px] bg-white rounded-xl shadow-[0_8px_16px_rgba(0,0,0,0.15)] p-12 max-md:p-8 max-[480px]:p-6">
+      <div className="w-full h-auto max-w-[450px] bg-white rounded-xl shadow-[0_8px_16px_rgba(0,0,0,0.15)] p-8 max-md:p-6 max-[480px]:p-6 overflow-y-auto">
         <h2 className="text-[2rem] max-md:text-[1.5rem] max-[480px]:text-[1.25rem] font-bold text-center mb-8 text-[var(--color-dark-gray)]">
-          Inicio de Sesión de Usuario
+          Cliente
         </h2>
 
         {error && (
@@ -113,21 +113,6 @@ export default function LoginPage() {
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            ¿No tienes cuenta?{' '}
-            <a href="/register" className="font-semibold hover:underline" style={{ color: 'var(--color-primary)' }}>
-              Regístrate
-            </a>
-          </p>
-        </div>
-
-        <div className="mt-4 text-center">
-          <a href="/admin/login" className="text-sm text-gray-500 hover:underline">
-            Acceso Administrador
-          </a>
-        </div>
       </div>
     </div>
   )

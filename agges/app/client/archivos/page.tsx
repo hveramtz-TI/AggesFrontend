@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload, FaEdit, FaDownload, FaTrash } from 'react-icons/fa'
 import { useArchivos } from '@/hooks'
-import type { Archivo } from '@/api/models'
+import type { Archivo, User } from '@/api/models'
 
 export default function ArchivosClientPage() {
   const { getArchivos, getArchivosCompartidos, downloadArchivo, deleteArchivo } = useArchivos()
@@ -10,6 +10,22 @@ export default function ArchivosClientPage() {
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<Archivo | null>(null)
+  
+  // Inicializar userId directamente desde localStorage
+  const [userId] = useState<number | null>(() => {
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        try {
+          const user: User = JSON.parse(userStr)
+          return user.id
+        } catch (error) {
+          console.error('Error al parsear usuario:', error)
+        }
+      }
+    }
+    return null
+  })
 
   useEffect(() => {
     const fetchArchivos = async () => {
@@ -18,17 +34,21 @@ export default function ArchivosClientPage() {
           getArchivos(),
           getArchivosCompartidos()
         ])
-        setArchivosDelCliente([
-          ...archivosPropios.results,
-          ...archivosCompartidos
-        ])
+        
+        // Combinar y eliminar duplicados basándonos en el ID
+        const todosLosArchivos = [...archivosPropios.results, ...archivosCompartidos]
+        const archivosUnicos = Array.from(
+          new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
+        )
+        
+        setArchivosDelCliente(archivosUnicos)
       } catch (error) {
         console.error('Error al obtener archivos:', error)
       }
     }
 
     fetchArchivos()
-  }, [])
+  }, [getArchivos, getArchivosCompartidos])
 
   const getFileIcon = (tipoMime: string) => {
     const tipo = tipoMime.toLowerCase()
@@ -81,10 +101,14 @@ export default function ArchivosClientPage() {
           getArchivos(),
           getArchivosCompartidos()
         ])
-        setArchivosDelCliente([
-          ...archivosPropios.results,
-          ...archivosCompartidos
-        ])
+        
+        // Combinar y eliminar duplicados basándonos en el ID
+        const todosLosArchivos = [...archivosPropios.results, ...archivosCompartidos]
+        const archivosUnicos = Array.from(
+          new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
+        )
+        
+        setArchivosDelCliente(archivosUnicos)
         alert('Archivo eliminado exitosamente')
       } catch (error) {
         console.error('Error al eliminar archivo:', error)
@@ -99,10 +123,14 @@ export default function ArchivosClientPage() {
         getArchivos(),
         getArchivosCompartidos()
       ])
-      setArchivosDelCliente([
-        ...archivosPropios.results,
-        ...archivosCompartidos
-      ])
+      
+      // Combinar y eliminar duplicados basándonos en el ID
+      const todosLosArchivos = [...archivosPropios.results, ...archivosCompartidos]
+      const archivosUnicos = Array.from(
+        new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
+      )
+      
+      setArchivosDelCliente(archivosUnicos)
       console.log('Archivo procesado exitosamente')
     } catch (error) {
       console.error('Error al recargar archivos:', error)
@@ -150,7 +178,12 @@ export default function ArchivosClientPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {archivosDelCliente.map((archivo: Archivo) => {
-                    const esPropio = archivo.usuario_compartido === null
+                    // Un archivo es propio si:
+                    // 1. El usuario actual es el propietario Y no está compartido
+                    // 2. O si fue compartido CON el usuario actual (usuario_compartido === userId)
+                    const esPropio = userId && archivo.usuario_propietario === userId && archivo.usuario_compartido === null
+                    const esCompartidoConmigo = userId && archivo.usuario_compartido === userId
+                    
                     return (
                       <tr key={archivo.id} className="hover:bg-[var(--color-light-green)] transition-colors border-b border-gray-200">
                         <td className="px-4 py-4 text-center">
@@ -162,7 +195,7 @@ export default function ArchivosClientPage() {
                           </span>
                         </td>
                         <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                          {formatFecha(archivo.fecha_subida)}
+                          {formatFecha(archivo.fecha_carga || archivo.fecha_subida || archivo.fecha_modificacion)}
                         </td>
                         <td className="px-4 py-4">
                           {esPropio ? (

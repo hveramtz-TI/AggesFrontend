@@ -26,7 +26,11 @@ export const useArchivos = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get<ArchivoListResponse>(ARCHIVOS_URLS.SHARED);
+      const { data } = await api.get<ArchivoListResponse | Archivo[]>(ARCHIVOS_URLS.SHARED);
+      // Si el backend devuelve un array directo, usarlo
+      if (Array.isArray(data)) {
+        return data;
+      }
       return data.results || [];
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
@@ -47,30 +51,21 @@ export const useArchivos = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: Implementar con API configurada
-      // const { data } = await api.get<ArchivoListResponse | Archivo[]>(ARCHIVOS_URLS.LIST, {
-      //   params: { page }
-      // });
+      const { data } = await api.get<ArchivoListResponse | Archivo[]>(ARCHIVOS_URLS.LIST, {
+        params: { page }
+      });
       
       // Si el backend devuelve un array directo, convertirlo al formato esperado
-      // if (Array.isArray(data)) {
-      //   return {
-      //     count: data.length,
-      //     next: null,
-      //     previous: null,
-      //     results: data
-      //   };
-      // }
+      if (Array.isArray(data)) {
+        return {
+          count: data.length,
+          next: null,
+          previous: null,
+          results: data
+        };
+      }
       
-      // return data;
-      
-      console.log('getArchivos - API no configurada');
-      return {
-        count: 0,
-        next: null,
-        previous: null,
-        results: []
-      };
+      return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
       const errorMessage = axiosError.response?.data?.detail || 
@@ -247,12 +242,8 @@ export const useArchivos = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: Implementar con API configurada
-      // const { data } = await api.post<Archivo>(ARCHIVOS_URLS.SHARE(id), { usuarios });
-      // return data;
-      
-      console.log('shareArchivo - API no configurada', id, usuarios);
-      return null;
+      const { data } = await api.post<Archivo>(ARCHIVOS_URLS.SHARE(id), { usuarios });
+      return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
       const errorMessage = axiosError.response?.data?.detail || 
@@ -272,12 +263,8 @@ export const useArchivos = () => {
     setLoading(true);
     setError(null);
     try {
-      // TODO: Implementar con API configurada
-      // const { data } = await api.post<Archivo>(ARCHIVOS_URLS.UNSHARE(id), { usuarios });
-      // return data;
-      
-      console.log('unshareArchivo - API no configurada', id, usuarios);
-      return null;
+      const { data } = await api.post<Archivo>(ARCHIVOS_URLS.UNSHARE(id), { usuarios });
+      return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
       const errorMessage = axiosError.response?.data?.detail || 

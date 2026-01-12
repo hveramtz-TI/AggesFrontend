@@ -13,7 +13,13 @@ export default function ClientesPage() {
     const cargarClientes = async () => {
       try {
         const data = await getClientes()
-        setClientes(data)
+        // Mapear a ClienteSimple (id, razonSocial, rut)
+        const clientesMapeados: ClienteSimple[] = data.map((cliente: { id: number; razonSocial?: string; rut?: string }) => ({
+          id: cliente.id,
+          razonSocial: cliente.razonSocial ?? '',
+          rut: cliente.rut ?? '',
+        }))
+        setClientes(clientesMapeados)
       } catch (error) {
         console.error('Error al cargar clientes:', error)
       }
@@ -21,15 +27,6 @@ export default function ClientesPage() {
 
     cargarClientes()
   }, [])
-
-  const handleToggleEstado = async (id: number) => {
-    // TODO: Implementar toggle de estado con API
-    setClientes(clientes.map(cliente => 
-      cliente.id === id 
-        ? { ...cliente, is_active: !cliente.is_active }
-        : cliente
-    ))
-  }
 
   const handleEditar = (id: number) => {
     console.log('Editar cliente:', id)
@@ -49,8 +46,8 @@ export default function ClientesPage() {
   }
 
   const clientesFiltrados = clientes.filter(cliente =>
-    cliente.username.toLowerCase().includes(busqueda.toLowerCase()) ||
-    cliente.email.toLowerCase().includes(busqueda.toLowerCase())
+    cliente.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
+    cliente.rut.toLowerCase().includes(busqueda.toLowerCase())
   )
 
   return (
@@ -85,18 +82,6 @@ export default function ClientesPage() {
           <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#6fb33d] p-6 rounded-xl text-white shadow-md">
             <p className="text-sm opacity-90 font-medium mb-2">Total Clientes</p>
             <p className="text-4xl font-bold">{clientes.length}</p>
-          </div>
-          <div className="bg-gradient-to-br from-[var(--color-dark-gray)] to-[#505050] p-6 rounded-xl text-white shadow-md">
-            <p className="text-sm opacity-90 font-medium mb-2">Activos</p>
-            <p className="text-4xl font-bold">
-              {clientes.filter(c => c.is_active).length}
-            </p>
-          </div>
-          <div className="bg-gradient-to-br from-[#9dd46a] to-[var(--color-primary)] p-6 rounded-xl text-white shadow-md">
-            <p className="text-sm opacity-90 font-medium mb-2">Inactivos</p>
-            <p className="text-4xl font-bold">
-              {clientes.filter(c => !c.is_active).length}
-            </p>
           </div>
         </div>
 
@@ -140,29 +125,21 @@ export default function ClientesPage() {
                   {clientesFiltrados.map((cliente) => (
                     <tr 
                       key={cliente.id} 
-                      className={`border-b border-gray-200 hover:bg-gray-50 transition-colors $
-{!cliente.is_active ? 'opacity-50' : ''}`}
+                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-4 py-4 font-bold text-[var(--color-dark-gray)] max-w-[250px]">
-                        {cliente.username}
+                        {cliente.razonSocial}
                       </td>
                       <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                        {cliente.email}
+                        {cliente.rut}
                       </td>
                       <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                        {new Date(cliente.date_joined).toLocaleDateString('es-CL')}
+                        {/* No hay date_joined, se puede dejar vacío o mostrar '-' */}
+                        -
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <label className="relative inline-block w-[50px] h-6 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={cliente.is_active}
-                            onChange={() => handleToggleEstado(cliente.id)}
-                            className="opacity-0 w-0 h-0 peer"
-                          />
-                          <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors peer-checked:bg-[var(--color-primary)]"></span>
-                          <span className="absolute left-[3px] bottom-[3px] w-[18px] h-[18px] bg-white rounded-full transition-transform peer-checked:translate-x-[26px]"></span>
-                        </label>
+                        {/* No hay is_active, se puede dejar vacío o mostrar un switch deshabilitado */}
+                        -
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2 justify-end">

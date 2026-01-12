@@ -2,11 +2,11 @@ import React from 'react'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 
-interface MainLayoutProps {
+interface LandingLayoutProps {
   children: React.ReactNode;
 }
 
-const MainLayout = ({ children }: MainLayoutProps) => {
+const LandingLayout = ({ children }: LandingLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen w-full">
       <Header />
@@ -18,4 +18,4 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   )
 }
 
-export default MainLayout
+export default LandingLayout

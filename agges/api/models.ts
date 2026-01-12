@@ -70,10 +70,8 @@ export interface PasswordChange {
 // Respuesta de GET /api/getclients/
 export interface ClienteSimple {
   id: number
-  username: string
-  email: string
-  is_active: boolean
-  date_joined: string
+  razonSocial: string
+  rut: string
 }
 
 export interface Cliente {
@@ -130,15 +128,12 @@ export interface Archivo {
   tamaño_bytes: number
   tipo_mime: string
   visibilidad: boolean
-  fecha_subida: string
+  fecha_carga?: string // Algunos endpoints usan fecha_carga
+  fecha_subida?: string // Otros usan fecha_subida
   fecha_modificacion: string
   usuario_propietario: number
-  usuario_compartido: {
-    id: number
-    username: string
-    email: string
-  } | null
-  nombre_usuario_compartido?: string
+  usuario_compartido: number | null // ID del usuario o null si no está compartido
+  nombre_usuario_compartido?: string // Nombre del usuario compartido (opcional)
 }
 
 // POST /api/documentos/ - multipart/form-data

@@ -40,15 +40,14 @@ export default function ArchivosAdminPage() {
     return <FaFile className="text-3xl text-gray-400" />
   }
 
-  const formatFecha = (fecha: string) => {
+  const formatFecha = (fecha?: string) => {
+    if (!fecha) return 'N/A'
     const date = new Date(fecha)
-    return date.toLocaleDateString('es-CL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    if (isNaN(date.getTime())) return 'N/A'
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
   }
 
   const handleDownload = async (archivo: Archivo) => {
@@ -145,26 +144,21 @@ export default function ArchivosAdminPage() {
                         {getFileIcon(archivo.tipo_mime)}
                       </td>
                       <td className="px-4 py-4">
-                        <span className="font-semibold text-[var(--color-dark-gray)] max-w-xs break-words">
-                          {archivo.nombre_archivo}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-[var(--color-dark-gray)] max-w-xs break-words">
+                            {archivo.nombre_archivo || 'N/A'}
+                          </span>
+                          <span className="text-xs text-gray-500">{archivo.tamaño_legible ? `(${archivo.tamaño_legible})` : ''}</span>
+                        </div>
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                        {formatFecha(archivo.fecha_subida)}
+                        {formatFecha(archivo.fecha_subida || archivo.fecha_carga)}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex flex-col gap-1">
-                          <div>
-                            <span className="text-xs text-gray-500 uppercase font-bold tracking-wide">Empresa:</span>
-                          </div>
+                          <span className="text-xs text-gray-500 uppercase font-bold tracking-wide">Cliente:</span>
                           <span className="text-sm font-medium text-[var(--color-dark-gray)]">
-                            {archivo.usuario_compartido?.username || 'N/A'}
-                          </span>
-                          <div className="mt-1">
-                            <span className="text-xs text-gray-500 uppercase font-bold tracking-wide">Cliente:</span>
-                          </div>
-                          <span className="text-sm font-medium text-[var(--color-dark-gray)]">
-                            {archivo.usuario_compartido?.email || 'N/A'}
+                            {archivo.nombre_usuario_compartido || 'N/A'}
                           </span>
                         </div>
                       </td>
