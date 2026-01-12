@@ -1,15 +1,20 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload, FaEdit, FaDownload, FaTrash } from 'react-icons/fa'
+import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload } from 'react-icons/fa'
 import { useArchivos } from '@/hooks'
 import type { Archivo } from '@/api/models'
+
+import ArchivosTable from './ArchivosTable'
+import Pagination from '@/components/common/Pagination'
+import SearchBar from '@/components/common/SearchBar'
 
 export default function ArchivosAdminPage() {
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<Archivo | null>(null)
   const [archivos, setArchivos] = useState<Archivo[]>([])
-  
+  const [busqueda, setBusqueda] = useState('')
+
   const { getArchivos, loading: loadingArchivos, downloadArchivo, deleteArchivo } = useArchivos()
 
   // Cargar archivos al montar el componente
@@ -71,9 +76,10 @@ export default function ArchivosAdminPage() {
     if (window.confirm(`¿Estás seguro de que deseas eliminar "${archivo.nombre_archivo}"?`)) {
       try {
         await deleteArchivo(archivo.id)
-        // Recargar la lista después de eliminar
+        // Recargar la lista después de eliminar y resetear página
         const responseArchivos = await getArchivos()
         setArchivos(responseArchivos.results || [])
+        setCurrentPage(1)
         alert('Archivo eliminado exitosamente')
       } catch (error) {
         console.error('Error al eliminar archivo:', error)
@@ -83,17 +89,30 @@ export default function ArchivosAdminPage() {
   }
 
   const handleSuccess = async () => {
-    // Recargar la lista de archivos después de subir/editar uno
+    // Recargar la lista de archivos después de subir/editar uno y resetear página
     try {
       const responseArchivos = await getArchivos()
       setArchivos(responseArchivos.results || [])
+      setCurrentPage(1)
     } catch (error) {
       console.error('Error al recargar archivos:', error)
     }
   }
 
+  // Filtrado y paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
+  const archivosFiltrados = archivos.filter(a =>
+    a.nombre_archivo?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    a.nombre_usuario_compartido?.toLowerCase().includes(busqueda.toLowerCase())
+  )
+  const totalPages = Math.ceil(archivosFiltrados.length / pageSize) || 1
+  const paginatedArchivos = archivosFiltrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+
+  // Eliminado el useEffect que reseteaba la página
+
   return (
-    <div className="min-h-screen bg-[var(--color-light-gray)]">
+    <div className="bg-[var(--color-light-gray)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -113,86 +132,42 @@ export default function ArchivosAdminPage() {
           </button>
         </div>
 
+        {/* Barra de búsqueda */}
+        <SearchBar
+          value={busqueda}
+          onChange={value => {
+            setBusqueda(value)
+            setCurrentPage(1)
+          }}
+          placeholder="Buscar por nombre de archivo o cliente..."
+          className="mb-6"
+        />
+
         {/* Loading State */}
         {loadingArchivos ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <div className="text-gray-600">Cargando archivos...</div>
           </div>
-        ) : archivos.length === 0 ? (
+        ) : archivosFiltrados.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📁</div>
-            <p className="text-xl text-gray-600 mb-2">No hay archivos disponibles</p>
-            <p className="text-sm text-gray-500">Los archivos subidos aparecerán aquí</p>
+            <div className="text-gray-600">No hay archivos disponibles.</div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[var(--color-dark-gray)] text-white">
-                  <tr>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider w-16">Tipo</th>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Archivo</th>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Fecha</th>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Cliente</th>
-                    <th className="px-4 py-4 text-center text-xs font-bold uppercase tracking-wider w-48">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {archivos.map((archivo) => (
-                    <tr key={archivo.id} className="hover:bg-gray-50 transition-colors border-b border-gray-200">
-                      <td className="px-4 py-4 text-center">
-                        {getFileIcon(archivo.tipo_mime)}
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-[var(--color-dark-gray)] max-w-xs break-words">
-                            {archivo.nombre_archivo || 'N/A'}
-                          </span>
-                          <span className="text-xs text-gray-500">{archivo.tamaño_legible ? `(${archivo.tamaño_legible})` : ''}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                        {formatFecha(archivo.fecha_subida || archivo.fecha_carga)}
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs text-gray-500 uppercase font-bold tracking-wide">Cliente:</span>
-                          <span className="text-sm font-medium text-[var(--color-dark-gray)]">
-                            {archivo.nombre_usuario_compartido || 'N/A'}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => handleEdit(archivo)}
-                            className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
-                            title="Editar"
-                          >
-                            <FaEdit className="text-lg" />
-                          </button>
-                          <button
-                            onClick={() => handleDownload(archivo)}
-                            className="p-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[#6fb33d] transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
-                            title="Descargar"
-                          >
-                            <FaDownload className="text-lg" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(archivo)}
-                            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
-                            title="Eliminar"
-                          >
-                            <FaTrash className="text-lg" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <>
+            <ArchivosTable
+              archivos={paginatedArchivos}
+              getFileIcon={getFileIcon}
+              formatFecha={formatFecha}
+              onEdit={handleEdit}
+              onDownload={handleDownload}
+              onDelete={handleDelete}
+            />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
         )}
 
         {/* TODO: Agregar modales FormFile y FormEditFile */}

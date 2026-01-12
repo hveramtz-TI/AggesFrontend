@@ -15,7 +15,7 @@ const Hero = () => {
       
       {/* Video de fondo */}
       <video 
-        className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 z-0"
+        className="absolute top-1/2 left-1/2 min-w-full h-screen size-auto object-cover -translate-x-1/2 -translate-y-1/2 z-0"
         autoPlay 
         loop 
         muted 

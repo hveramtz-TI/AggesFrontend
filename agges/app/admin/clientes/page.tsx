@@ -4,9 +4,16 @@ import { FaEdit, FaTrash, FaFolder } from 'react-icons/fa'
 import { useClientes } from '@/hooks'
 import type { ClienteSimple } from '@/api/models'
 
+import ClientesTable from './ClientesTable'
+import Pagination from '@/components/common/Pagination'
+import SearchBar from '@/components/common/SearchBar'
+import ModalDelete from '@/components/common/ModalDelete'
+
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<ClienteSimple[]>([])
   const [busqueda, setBusqueda] = useState('')
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [clienteAEliminar, setClienteAEliminar] = useState<ClienteSimple | null>(null)
   const { getClientes, loading } = useClientes()
 
   useEffect(() => {
@@ -33,11 +40,25 @@ export default function ClientesPage() {
     // TODO: Navegar a edición o abrir modal
   }
 
-  const handleEliminar = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este cliente?')) {
+
+  const handleEliminar = (id: number) => {
+    const cliente = clientes.find(c => c.id === id) || null
+    setClienteAEliminar(cliente)
+    setShowDeleteModal(true)
+  }
+
+  const confirmarEliminar = async () => {
+    if (clienteAEliminar) {
       // TODO: Implementar eliminación con API
-      setClientes(clientes.filter(cliente => cliente.id !== id))
+      setClientes(clientes.filter(cliente => cliente.id !== clienteAEliminar.id))
+      setShowDeleteModal(false)
+      setClienteAEliminar(null)
     }
+  }
+
+  const cancelarEliminar = () => {
+    setShowDeleteModal(false)
+    setClienteAEliminar(null)
   }
 
   const handleVerArchivos = (id: number) => {
@@ -45,10 +66,19 @@ export default function ClientesPage() {
     // TODO: Navegar a archivos del cliente
   }
 
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
   const clientesFiltrados = clientes.filter(cliente =>
     cliente.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
     cliente.rut.toLowerCase().includes(busqueda.toLowerCase())
   )
+  const totalPages = Math.ceil(clientesFiltrados.length / pageSize) || 1
+  const paginatedClientes = clientesFiltrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+
+  // Resetear página al filtrar
+  // (Ahora se maneja en el onChange del input de búsqueda)
 
   return (
     <div className="min-h-screen bg-[var(--color-light-gray)]">
@@ -67,15 +97,15 @@ export default function ClientesPage() {
         </div>
 
         {/* Barra de búsqueda */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-          <input
-            type="text"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_rgba(131,202,74,0.1)] transition-all"
-            placeholder="Buscar por nombre o email..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
-        </div>
+        <SearchBar
+          value={busqueda}
+          onChange={value => {
+            setBusqueda(value)
+            setCurrentPage(1)
+          }}
+          placeholder="Buscar por nombre o RUT..."
+          className="mb-6"
+        />
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -91,86 +121,29 @@ export default function ClientesPage() {
             <div className="p-12 text-center text-gray-600">
               Cargando clientes...
             </div>
-          ) : clientesFiltrados.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="text-6xl mb-4">👥</div>
-              <p className="text-xl text-gray-600 mb-2">No se encontraron clientes</p>
-              <p className="text-sm text-gray-500">
-                {busqueda ? 'Intenta con otros términos de búsqueda' : 'Comienza agregando tu primer cliente'}
-              </p>
-            </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead className="bg-[var(--color-light-green)]">
-                  <tr>
-                    <th className="px-4 py-4 text-left font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-                      Usuario
-                    </th>
-                    <th className="px-4 py-4 text-left font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-4 py-4 text-left font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-                      Fecha Registro
-                    </th>
-                    <th className="px-4 py-4 text-center font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-                      Estado
-                    </th>
-                    <th className="px-4 py-4 text-right font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clientesFiltrados.map((cliente) => (
-                    <tr 
-                      key={cliente.id} 
-                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-4 py-4 font-bold text-[var(--color-dark-gray)] max-w-[250px]">
-                        {cliente.razonSocial}
-                      </td>
-                      <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                        {cliente.rut}
-                      </td>
-                      <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                        {/* No hay date_joined, se puede dejar vacío o mostrar '-' */}
-                        -
-                      </td>
-                      <td className="px-4 py-4 text-center">
-                        {/* No hay is_active, se puede dejar vacío o mostrar un switch deshabilitado */}
-                        -
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex gap-2 justify-end">
-                          <button
-                            onClick={() => handleEditar(cliente.id)}
-                            className="p-2 bg-[var(--color-primary)] text-white rounded-md hover:bg-[#6fb33d] transition-all hover:transform hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center"
-                            title="Editar"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleVerArchivos(cliente.id)}
-                            className="p-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-all hover:transform hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center"
-                            title="Ver Archivos"
-                          >
-                            <FaFolder />
-                          </button>
-                          <button
-                            onClick={() => handleEliminar(cliente.id)}
-                            className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all hover:transform hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center"
-                            title="Eliminar"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <ClientesTable
+                clientes={paginatedClientes}
+                onEditar={handleEditar}
+                onEliminar={handleEliminar}
+                onVerArchivos={handleVerArchivos}
+              />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+              <ModalDelete
+                open={showDeleteModal}
+                onClose={cancelarEliminar}
+                onConfirm={confirmarEliminar}
+                title="¿Estás seguro de eliminar este cliente?"
+                description={clienteAEliminar ? `Esta acción eliminará a "${clienteAEliminar.razonSocial}" y no se puede deshacer.` : ''}
+                confirmText="Sí, eliminar"
+                cancelText="No, cancelar"
+              />
+            </>
           )}
         </div>
       </div>

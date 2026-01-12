@@ -10,7 +10,7 @@ const LandingLayout = ({ children }: LandingLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen w-full">
       <Header />
-      <main className="flex-grow px-8" style={{ backgroundColor: 'var(--color-light-green)' }}>
+      <main className="flex-grow " style={{ backgroundColor: 'var(--color-light-green)' }}>
         {children}
       </main>
       <Footer />

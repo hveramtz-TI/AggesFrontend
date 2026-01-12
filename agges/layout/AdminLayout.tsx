@@ -105,7 +105,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 max-md:p-4 bg-[var(--color-light-green)] overflow-y-auto">
+      <main className="flex-1 max-md:p-4 bg-[var(--color-light-green)] overflow-y-auto">
         {children}
       </main>
     </div>
