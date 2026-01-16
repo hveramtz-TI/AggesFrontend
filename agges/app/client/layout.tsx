@@ -1,9 +1,10 @@
-import ClientLayout from '@/layout/ClientLayout'
+'use client'
+import MainLayout from '@/layout/MainLayout'
 
 export default function ClientGroupLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <ClientLayout>{children}</ClientLayout>
+  return <MainLayout>{children}</MainLayout>
 }

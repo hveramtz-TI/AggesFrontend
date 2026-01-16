@@ -1,5 +1,10 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
+
+import dynamic from 'next/dynamic';
+const Chart = dynamic(() => import('../../../components/Chart'), { ssr: false });
+import Calendar from '../../../components/Calendar';
 
 export default function ClientDashboard() {
   const router = useRouter()
@@ -42,6 +47,29 @@ export default function ClientDashboard() {
   const formatearNumero = (num: number) => {
     return new Intl.NumberFormat('es-CL').format(num)
   }
+
+  // Datos para el gráfico de materiales gestionados
+  const materialesLabels = Object.keys(report.materiales);
+  const materialesData = Object.values(report.materiales);
+  const chartMaterialesData = {
+    labels: materialesLabels,
+    datasets: [
+      {
+        label: 'Materiales gestionados (kg)',
+        data: materialesData,
+        backgroundColor: [
+          '#6fb33d', '#f39c12', '#3498db', '#e74c3c', '#9b59b6', '#34495e', '#95a5a6', '#7f8c8d', '#2ecc71'
+        ],
+      },
+    ],
+  };
+  const chartMaterialesOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: { display: true, text: 'Materiales gestionados' },
+    },
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-light-gray)]">
@@ -122,6 +150,11 @@ export default function ClientDashboard() {
           </div>
         </div>
 
+        {/* Gráfico de materiales gestionados */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <Chart type="bar" data={chartMaterialesData} options={chartMaterialesOptions} height={80} />
+        </div>
+
         {/* Sección de accesos rápidos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
@@ -188,9 +221,8 @@ export default function ClientDashboard() {
         {/* Actividad Reciente */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <h2 className="text-2xl font-bold text-[var(--color-dark-gray)] mb-4">Actividad Reciente</h2>
-          <div className="text-center py-12 text-gray-500">
-            <div className="text-6xl mb-4">📅</div>
-            <p>No hay actividad reciente</p>
+          <div className="flex flex-col items-center justify-center py-8">
+            <Calendar />
           </div>
         </div>
       </div>

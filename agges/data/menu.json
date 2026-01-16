@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Dashboard",
+    "icon": "FaHome",
+    "path": "/admin/dashboard",
+    "admin": true
+  },
+  {
+    "name": "Clientes",
+    "icon": "FaUsers",
+    "path": "/admin/clientes",
+    "admin": true
+  },
+  {
+    "name": "Archivos",
+    "icon": "FaFileAlt",
+    "path": "/admin/archivos",
+    "admin": true
+  },
+  {
+    "name": "Dashboard",
+    "icon": "FaHome",
+    "path": "/client/dashboard",
+    "admin": false
+  },
+  {
+    "name": "Cotizaciones",
+    "icon": "FaFileInvoice",
+    "path": "/client/cotizacion",
+    "admin": false
+  },
+  {
+    "name": "Archivos",
+    "icon": "FaFileAlt",
+    "path": "/client/archivos",
+    "admin": false
+  }
+]

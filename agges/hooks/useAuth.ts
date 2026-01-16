@@ -33,6 +33,8 @@ export const useAuth = () => {
             }
 
             // Navegar según el tipo de usuario
+            localStorage.setItem('user_type', tipo.toString());
+            console.log('Tipo de usuario guardado:', tipo);
             const targetRoute = tipo === 0 ? '/client/dashboard' : '/admin/dashboard';
             console.log('Navegando a:', targetRoute);
             

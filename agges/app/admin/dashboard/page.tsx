@@ -1,8 +1,36 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic';
+import Calendar from '@/components/Calendar';
+
+const Chart = dynamic(() => import('../../../components/Chart'), { ssr: false });
 
 export default function AdminDashboard() {
   const router = useRouter()
+
+  // Datos simulados para el gráfico de resumen
+  const resumenLabels = ['Clientes', 'Cotizaciones', 'Proyectos', 'Documentos'];
+  const resumenData = [10, 5, 3, 8]; // Simulado, reemplazar por datos reales
+  const chartResumenData = {
+    labels: resumenLabels,
+    datasets: [
+      {
+        label: 'Resumen',
+        data: resumenData,
+        backgroundColor: [
+          '#6fb33d', '#f39c12', '#3498db', '#9b59b6'
+        ],
+      },
+    ],
+  };
+  const chartResumenOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: true },
+      title: { display: true, text: 'Resumen general' },
+    },
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-light-gray)]">
@@ -44,6 +72,11 @@ export default function AdminDashboard() {
             </h3>
             <p className="text-4xl font-bold text-[var(--color-primary)] mb-0">0</p>
           </div>
+        </div>
+
+        {/* Gráfico resumen */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <Chart type="pie" data={chartResumenData} options={chartResumenOptions} height={80} />
         </div>
 
         {/* Accesos rápidos */}
@@ -108,9 +141,7 @@ export default function AdminDashboard() {
         {/* Actividad reciente */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4 text-[var(--color-dark-gray)]">Actividad Reciente</h2>
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <p className="text-gray-500 text-center opacity-70">No hay actividad reciente</p>
-          </div>
+          <Calendar/>
         </div>
       </div>
     </div>

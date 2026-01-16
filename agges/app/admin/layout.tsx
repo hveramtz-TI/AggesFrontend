@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import AdminLayout from '@/layout/AdminLayout'
+import MainLayout from '@/layout/MainLayout'
 
 export default function AdminGroupLayout({
   children,
@@ -15,5 +15,5 @@ export default function AdminGroupLayout({
     return <>{children}</>
   }
   
-  return <AdminLayout>{children}</AdminLayout>
+  return <MainLayout>{children}</MainLayout>
 }

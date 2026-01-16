@@ -1,19 +1,21 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { FaEdit, FaTrash, FaFolder } from 'react-icons/fa'
 import { useClientes } from '@/hooks'
 import type { ClienteSimple } from '@/api/models'
 
 import ClientesTable from './ClientesTable'
 import Pagination from '@/components/common/Pagination'
 import SearchBar from '@/components/common/SearchBar'
-import ModalDelete from '@/components/common/ModalDelete'
+import Modal from '@/components/Modal'
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<ClienteSimple[]>([])
   const [busqueda, setBusqueda] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [clienteAEliminar, setClienteAEliminar] = useState<ClienteSimple | null>(null)
+  const [showFormModal, setShowFormModal] = useState(false)
+  const [formMode, setFormMode] = useState<'crear' | 'editar'>('crear')
+  const [clienteEdit, setClienteEdit] = useState<ClienteSimple | null>(null)
   const { getClientes, loading } = useClientes()
 
   useEffect(() => {
@@ -36,9 +38,59 @@ export default function ClientesPage() {
   }, [])
 
   const handleEditar = (id: number) => {
-    console.log('Editar cliente:', id)
-    // TODO: Navegar a edición o abrir modal
+    const cliente = clientes.find(c => c.id === id) || null;
+    setClienteEdit(cliente);
+    setFormMode('editar');
+    setShowFormModal(true);
   }
+  // Modal de formulario (crear/editar)
+  const handleOpenCrear = () => {
+    setClienteEdit(null);
+    setFormMode('crear');
+    setShowFormModal(true);
+  };
+
+  // Formulario de prueba
+  const [formData, setFormData] = useState({ razonSocial: '', rut: '' });
+
+  // Actualizar datos del formulario
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Crear cliente (solo frontend, no envía al backend)
+  const handleCrearCliente = async () => {
+    setClientes([
+      ...clientes,
+      {
+        id: Math.max(0, ...clientes.map(c => c.id)) + 1,
+        razonSocial: formData.razonSocial,
+        rut: formData.rut,
+      },
+    ]);
+    setShowFormModal(false);
+    setFormData({ razonSocial: '', rut: '' });
+  };
+
+  // Editar cliente (solo frontend, no envía al backend)
+  const handleEditarCliente = async () => {
+    setClientes(clientes.map(c =>
+      c.id === clienteEdit?.id ? { ...c, razonSocial: formData.razonSocial, rut: formData.rut } : c
+    ));
+    setShowFormModal(false);
+    setClienteEdit(null);
+    setFormData({ razonSocial: '', rut: '' });
+  };
+
+  // Abrir modal de edición y cargar datos
+  useEffect(() => {
+    if (showFormModal && formMode === 'editar' && clienteEdit) {
+      setFormData({ razonSocial: clienteEdit.razonSocial, rut: clienteEdit.rut });
+    }
+    if (showFormModal && formMode === 'crear') {
+      setFormData({ razonSocial: '', rut: '' });
+    }
+  }, [showFormModal, formMode, clienteEdit]);
 
 
   const handleEliminar = (id: number) => {
@@ -49,7 +101,6 @@ export default function ClientesPage() {
 
   const confirmarEliminar = async () => {
     if (clienteAEliminar) {
-      // TODO: Implementar eliminación con API
       setClientes(clientes.filter(cliente => cliente.id !== clienteAEliminar.id))
       setShowDeleteModal(false)
       setClienteAEliminar(null)
@@ -63,9 +114,7 @@ export default function ClientesPage() {
 
   const handleVerArchivos = (id: number) => {
     console.log('Ver archivos del cliente:', id)
-    // TODO: Navegar a archivos del cliente
   }
-
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1)
@@ -77,24 +126,55 @@ export default function ClientesPage() {
   const totalPages = Math.ceil(clientesFiltrados.length / pageSize) || 1
   const paginatedClientes = clientesFiltrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
-  // Resetear página al filtrar
-  // (Ahora se maneja en el onChange del input de búsqueda)
-
   return (
-    <div className="min-h-screen bg-[var(--color-light-gray)]">
+    <div className="min-h-screen bg-(--color-light-gray)">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--color-dark-gray)]">
+          <h1 className="text-3xl sm:text-4xl font-bold text-(--color-dark-gray)">
             Gestión de Clientes
           </h1>
           <button
             className="w-full sm:w-auto px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 hover:opacity-90"
             style={{ backgroundColor: 'var(--color-primary)' }}
+            onClick={handleOpenCrear}
           >
             + Nuevo Cliente
           </button>
         </div>
+
+        {/* Modal Crear/Editar Cliente */}
+        <Modal
+          open={showFormModal}
+          onClose={() => { setShowFormModal(false); setClienteEdit(null); }}
+          type="formulario"
+          title={formMode === 'crear' ? 'Crear Cliente' : 'Editar Cliente'}
+          formContent={
+            <form className="flex flex-col content-center items-center gap-4">
+              <label className="text-(--color-dark-gray) font-medium flex flex-col content-center items-center">Razón Social
+                <input
+                  type="text"
+                  name="razonSocial"
+                  value={formData.razonSocial}
+                  onChange={handleFormChange}
+                  className="mt-1 md:w-90 px-3 py-2 rounded border border-(--color-primary) focus:outline-none focus:border-(--color-primary)"
+                  required
+                />
+              </label>
+              <label className="text-(--color-dark-gray) flex flex-col content-center items-center font-medium">RUT
+                <input
+                  type="text"
+                  name="rut"
+                  value={formData.rut}
+                  onChange={handleFormChange}
+                  className="mt-1 md:w-90 px-3 py-2 rounded border border-(--color-primary) focus:outline-none focus:border-(--color-primary)"
+                  required
+                />
+              </label>
+            </form>
+          }
+          onCreate={formMode === 'crear' ? handleCrearCliente : handleEditarCliente}
+        />
 
         {/* Barra de búsqueda */}
         <SearchBar
@@ -109,7 +189,7 @@ export default function ClientesPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#6fb33d] p-6 rounded-xl text-white shadow-md">
+          <div className="bg-linear-to-br from-(--color-primary) to-[#6fb33d] p-6 rounded-xl text-white shadow-md">
             <p className="text-sm opacity-90 font-medium mb-2">Total Clientes</p>
             <p className="text-4xl font-bold">{clientes.length}</p>
           </div>
@@ -133,15 +213,6 @@ export default function ClientesPage() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-              />
-              <ModalDelete
-                open={showDeleteModal}
-                onClose={cancelarEliminar}
-                onConfirm={confirmarEliminar}
-                title="¿Estás seguro de eliminar este cliente?"
-                description={clienteAEliminar ? `Esta acción eliminará a "${clienteAEliminar.razonSocial}" y no se puede deshacer.` : ''}
-                confirmText="Sí, eliminar"
-                cancelText="No, cancelar"
               />
             </>
           )}
