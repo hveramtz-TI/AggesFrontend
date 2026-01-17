@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks';
+import Cookies from 'js-cookie';
 import HeaderACDesktop from './components/Header/HeaderACDesktop';
 import HeaderACMobile from './components/Header/HeaderACMobile';
 
@@ -39,7 +40,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   // Protección de rutas - verificar autenticación
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
+    const token = Cookies.get('access_token');
     if (!token) {
       router.push('/login');
     }
