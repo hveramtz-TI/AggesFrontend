@@ -1,3 +1,4 @@
+'use client';
 
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 import {
