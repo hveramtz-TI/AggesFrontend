@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import menu from '@/data/menu.json'
 import { FaHome, FaUsers, FaFileAlt, FaFileInvoice } from 'react-icons/fa'
+import { FaCalendar } from 'react-icons/fa6';
 
 interface HeaderACDesktopProps {
   isActive: (path: string) => boolean;
@@ -17,6 +18,7 @@ const iconMap: Record<string, React.ReactNode> = {
   FaUsers: <FaUsers size={22} />,
   FaFileAlt: <FaFileAlt size={22} />,
   FaFileInvoice: <FaFileInvoice size={22} />,
+  FaCalendar : <FaCalendar size={22} />,
 };
 
 // Define the type for menu items

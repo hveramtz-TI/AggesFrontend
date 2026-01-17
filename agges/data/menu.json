@@ -34,5 +34,11 @@
     "icon": "FaFileAlt",
     "path": "/client/archivos",
     "admin": false
+  },
+  {
+    "name": "Reservas",
+    "icon": "FaCalendar",
+    "path": "/client/reservas",
+    "admin": false
   }
 ]

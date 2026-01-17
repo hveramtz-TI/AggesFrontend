@@ -1,6 +1,6 @@
 
 import Link from 'next/link'
-import { FaHome, FaFileAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaTimes, FaUsers } from 'react-icons/fa'
+import { FaHome, FaFileAlt, FaFileInvoice, FaSignOutAlt, FaBars, FaTimes, FaUsers, FaCalendar  } from 'react-icons/fa'
 import React from 'react'
 import menu from '@/data/menu.json'
 
@@ -19,6 +19,7 @@ const iconMap: Record<string, React.ReactNode> = {
 	FaFileAlt: <FaFileAlt size={22} />,
 	FaFileInvoice: <FaFileInvoice size={22} />,
 	FaUsers: <FaUsers size={22} />,
+	FaCalendar : <FaCalendar size={22} />,
 };
 
 interface MenuItem {
