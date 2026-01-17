@@ -61,24 +61,43 @@ type Props =
     };
 
 
+
 const Chart = (props: Props) => {
   const { type, data, options } = props;
-  // Forzar responsive y mantener aspect ratio
-  const mergedOptions = {
-    ...options,
-    responsive: true,
-    maintainAspectRatio: false,
-  };
   const style = { width: '100%', height: '350px', minHeight: 200 };
   switch (type) {
-    case 'bar':
+    case 'bar': {
+      const mergedOptions: ChartOptions<'bar'> = {
+        ...options,
+        responsive: true,
+        maintainAspectRatio: false,
+      };
       return <div style={style}><Bar data={data} options={mergedOptions} /></div>;
-    case 'line':
+    }
+    case 'line': {
+      const mergedOptions: ChartOptions<'line'> = {
+        ...options,
+        responsive: true,
+        maintainAspectRatio: false,
+      };
       return <div style={style}><Line data={data} options={mergedOptions} /></div>;
-    case 'pie':
+    }
+    case 'pie': {
+      const mergedOptions: ChartOptions<'pie'> = {
+        ...options,
+        responsive: true,
+        maintainAspectRatio: false,
+      };
       return <div style={style}><Pie data={data} options={mergedOptions} /></div>;
-    case 'doughnut':
+    }
+    case 'doughnut': {
+      const mergedOptions: ChartOptions<'doughnut'> = {
+        ...options,
+        responsive: true,
+        maintainAspectRatio: false,
+      };
       return <div style={style}><Doughnut data={data} options={mergedOptions} /></div>;
+    }
     default:
       return <div>Tipo de gráfico no soportado</div>;
   }
