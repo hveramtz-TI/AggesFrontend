@@ -1,19 +1,14 @@
-'use client'
+import MainLayout from '@/layout/MainLayout';
+import type { Metadata } from 'next';
 
-import { usePathname } from 'next/navigation'
-import MainLayout from '@/layout/MainLayout'
+export const metadata: Metadata = {
+    title: 'Panel Admin | AGGES',
+};
 
-export default function AdminGroupLayout({
-  children,
+export default function AdminLayout({
+    children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode;
 }) {
-  const pathname = usePathname()
-  
-  // Si estamos en login, no aplicar el layout del panel
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
-  
-  return <MainLayout>{children}</MainLayout>
+    return <MainLayout>{children}</MainLayout>;
 }

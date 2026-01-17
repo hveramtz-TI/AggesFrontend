@@ -1,10 +1,14 @@
-'use client'
-import MainLayout from '@/layout/MainLayout'
+import MainLayout from '@/layout/MainLayout';
+import type { Metadata } from 'next';
 
-export default function ClientGroupLayout({
-  children,
+export const metadata: Metadata = {
+    title: 'Panel Cliente | AGGES',
+};
+
+export default function ClientLayout({
+    children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode;
 }) {
-  return <MainLayout>{children}</MainLayout>
+    return <MainLayout>{children}</MainLayout>;
 }

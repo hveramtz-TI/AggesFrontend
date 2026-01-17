@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
+import Cookies from 'js-cookie'
 import { AUTH_URLS } from './urls'
 
 /**
@@ -40,7 +41,7 @@ export const api = axios.create({
  */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('access_token')
+    const token = Cookies.get('access_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -62,10 +63,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
-      const refreshToken = localStorage.getItem('refresh_token')
+      const refreshToken = Cookies.get('refresh_token')
 
       if (!refreshToken) {
-        localStorage.clear()
+        // Limpiar tokens
+        Cookies.remove('access_token')
+        Cookies.remove('refresh_token')
+        localStorage.removeItem('user') // El usuario sigue en localStorage por ahora si no es sensible
         window.location.href = '/login'
         return Promise.reject(error)
       }
@@ -76,10 +80,10 @@ api.interceptors.response.use(
           refresh: refreshToken,
         })
 
-        // Guardar nuevos tokens
-        localStorage.setItem('access_token', data.access)
+        // Guardar nuevos tokens en cookies
+        Cookies.set('access_token', data.access, { expires: 1, secure: true, sameSite: 'strict' })
         if (data.refresh) {
-          localStorage.setItem('refresh_token', data.refresh)
+          Cookies.set('refresh_token', data.refresh, { expires: 7, secure: true, sameSite: 'strict' })
         }
 
         // Reintentar petición original con nuevo token
@@ -89,7 +93,9 @@ api.interceptors.response.use(
         return api(originalRequest)
       } catch (refreshError) {
         // Si falla el refresh, cerrar sesión
-        localStorage.clear()
+        Cookies.remove('access_token')
+        Cookies.remove('refresh_token')
+        localStorage.removeItem('user')
         window.location.href = '/login'
         return Promise.reject(refreshError)
       }

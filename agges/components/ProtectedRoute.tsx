@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -17,9 +18,9 @@ interface ProtectedRouteProps {
  *   <AdminDashboard />
  * </ProtectedRoute>
  */
-export default function ProtectedRoute({ 
-  children, 
-  requiredRole 
+export default function ProtectedRoute({
+  children,
+  requiredRole
 }: ProtectedRouteProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -28,9 +29,9 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     const checkAuth = () => {
-      // Verificar token
-      const token = localStorage.getItem('access_token')
-      
+      // Verificar token en cookies
+      const token = Cookies.get('access_token')
+
       if (!token) {
         // No hay token, redirigir a login
         if (pathname?.startsWith('/admin')) {
@@ -45,7 +46,7 @@ export default function ProtectedRoute({
       // Verificar rol si es requerido
       if (requiredRole) {
         const userStr = localStorage.getItem('user')
-        
+
         if (!userStr) {
           // No hay información de usuario
           router.push('/login')
@@ -55,7 +56,7 @@ export default function ProtectedRoute({
 
         try {
           const user = JSON.parse(userStr)
-          
+
           // Verificar que el usuario tenga el rol requerido
           if (user.role !== requiredRole && user.is_staff !== (requiredRole === 'admin')) {
             // No tiene el rol correcto, redirigir a home
@@ -84,8 +85,8 @@ export default function ProtectedRoute({
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--color-light-gray)]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 mb-4" 
-               style={{ borderColor: 'var(--color-primary)' }}
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 mb-4"
+            style={{ borderColor: 'var(--color-primary)' }}
           />
           <p className="text-gray-600">Verificando acceso...</p>
         </div>

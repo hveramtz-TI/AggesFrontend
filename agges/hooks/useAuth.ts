@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
+import Cookies from 'js-cookie';
 import { api } from '@/api/client';
 import { AUTH_URLS } from '@/api/urls';
 import type { LoginCredentials, LoginResponse } from '@/api/models';
@@ -16,17 +17,17 @@ export const useAuth = () => {
 
         try {
             const { data } = await api.post<LoginResponse>(AUTH_URLS.LOGIN, credentials);
-            
+
             console.log('Respuesta del backend:', data);
 
-            // Guardar tokens JWT
+            // Guardar tokens JWT en Cookies
             if (data.tokens) {
-                localStorage.setItem('access_token', data.tokens.access);
-                localStorage.setItem('refresh_token', data.tokens.refresh);
-                console.log('Tokens guardados correctamente');
+                Cookies.set('access_token', data.tokens.access, { expires: 1, secure: true, sameSite: 'strict' });
+                Cookies.set('refresh_token', data.tokens.refresh, { expires: 7, secure: true, sameSite: 'strict' });
+                console.log('Tokens guardados correctamente en cookies');
             }
 
-            // Guardar información del usuario
+            // Guardar información del usuario en localStorage (no es sensible)
             if (data.user) {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 console.log('Usuario guardado:', data.user);
@@ -37,17 +38,17 @@ export const useAuth = () => {
             console.log('Tipo de usuario guardado:', tipo);
             const targetRoute = tipo === 0 ? '/client/dashboard' : '/admin/dashboard';
             console.log('Navegando a:', targetRoute);
-            
-            // Usar window.location para navegación más robusta
+
+            // Usar window.location para navegación más robusta y asegurar limpieza de estados
             window.location.href = targetRoute;
 
             return { success: true };
 
         } catch (err) {
             const axiosError = err as AxiosError<{ detail?: string }>;
-            const errorMessage = axiosError.response?.data?.detail || 
-                               axiosError.message || 
-                               'Error al conectar con el servidor';
+            const errorMessage = axiosError.response?.data?.detail ||
+                axiosError.message ||
+                'Error al conectar con el servidor';
             setError(errorMessage);
             console.error('Error:', err);
             return { success: false, error: errorMessage };
@@ -57,8 +58,8 @@ export const useAuth = () => {
     };
 
     const logout = async () => {
-        const refreshToken = localStorage.getItem('refresh_token');
-        
+        const refreshToken = Cookies.get('refresh_token');
+
         if (refreshToken) {
             try {
                 await api.post(AUTH_URLS.LOGOUT, { refresh: refreshToken });
@@ -67,16 +68,19 @@ export const useAuth = () => {
             }
         }
 
+        // Limpiar Cookies
+        Cookies.remove('access_token');
+        Cookies.remove('refresh_token');
+
         // Limpiar localStorage
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        
+        localStorage.removeItem('user_type');
+
         router.push('/');
     };
 
     const isAuthenticated = () => {
-        return !!localStorage.getItem('access_token');
+        return !!Cookies.get('access_token');
     };
 
     return {

@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-// TODO: Importar API cuando esté configurada
-// import { api } from '@/api/api';
 import { AxiosError } from 'axios';
 import type { AxiosRequestConfig } from 'axios';
+import { api } from '@/api/client';
 
 interface UseFetchResult<T> {
     data: T | null;
@@ -30,23 +29,22 @@ export const useFetch = <T = any>(
         setError(null);
 
         try {
-            // TODO: Implementar con API configurada
-            // const response = await api({
-            //     url,
-            //     method: options?.method || 'GET',
-            //     ...options,
-            // });
-            // setData(response.data);
-
-            console.log('Fetch:', url, options);
-            throw new Error('API no configurada');
-
+            const response = await api({
+                url,
+                method: options?.method || 'GET',
+                ...options,
+            });
+            setData(response.data);
         } catch (err) {
-            const axiosError = err as AxiosError<{ message?: string }>;
-            
+            const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
+
             if (axiosError.response) {
                 // Error de respuesta del servidor
-                setError(axiosError.response.data?.message || `Error ${axiosError.response.status}`);
+                setError(
+                    axiosError.response.data?.detail ||
+                    axiosError.response.data?.message ||
+                    `Error ${axiosError.response.status}`
+                );
             } else if (axiosError.request) {
                 // No se recibió respuesta
                 setError('No se pudo conectar con el servidor');
