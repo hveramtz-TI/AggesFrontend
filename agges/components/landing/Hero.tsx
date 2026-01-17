@@ -37,32 +37,6 @@ const Hero = () => {
           <p className="text-lg leading-relaxed opacity-95 m-0 max-w-[600px] text-white">
             Gestiona tus proyectos de manera eficiente y sostenible
           </p>
-          
-          <div className="flex gap-4 justify-center flex-wrap">
-            <a 
-              href="/login" 
-              className="px-8 py-3.5 rounded-lg text-base font-semibold no-underline inline-block transition-all duration-300 bg-white hover:shadow-[0_8px_16px_rgba(0,0,0,0.2)] hover:-translate-y-0.5"
-              style={{ color: 'var(--color-primary)' }}
-            >
-              Iniciar Sesión
-            </a>
-            
-            <a 
-              href="/register" 
-              className="px-8 py-3.5 rounded-lg text-base font-semibold no-underline inline-block transition-all duration-300 bg-transparent text-white border-2 border-white hover:bg-white hover:-translate-y-0.5"
-              style={{ 
-                '--hover-color': 'var(--color-primary)'
-              } as React.CSSProperties}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--color-primary)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'white'
-              }}
-            >
-              Registrarse
-            </a>
-          </div>
         </div>
       </div>
     </section>
