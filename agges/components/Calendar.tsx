@@ -1,4 +1,4 @@
-
+'use client';
 import React, { useState } from 'react';
 
 const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
