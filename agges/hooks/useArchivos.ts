@@ -34,9 +34,9 @@ export const useArchivos = () => {
       return data.results || [];
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al cargar archivos';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al cargar archivos';
       setError(errorMessage);
       throw err;
     } finally {
@@ -54,7 +54,7 @@ export const useArchivos = () => {
       const { data } = await api.get<ArchivoListResponse | Archivo[]>(ARCHIVOS_URLS.LIST, {
         params: { page }
       });
-      
+
       // Si el backend devuelve un array directo, convertirlo al formato esperado
       if (Array.isArray(data)) {
         return {
@@ -64,13 +64,13 @@ export const useArchivos = () => {
           results: data
         };
       }
-      
+
       return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al cargar archivos';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al cargar archivos';
       setError(errorMessage);
       throw err;
     } finally {
@@ -89,9 +89,9 @@ export const useArchivos = () => {
       return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al obtener archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al obtener archivo';
       setError(errorMessage);
       throw err;
     } finally {
@@ -150,25 +150,26 @@ export const useArchivos = () => {
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', nombreConExtension);
-      
+
       // Agregar al DOM, hacer clic y remover
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
+
       // Liberar memoria
       window.URL.revokeObjectURL(url);
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al descargar archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al descargar archivo';
       setError(errorMessage);
       throw err;
     } finally {
       setDownloading(false);
     }
-  }, []);
+  }, [getExtensionFromMime]);
+
 
   /**
    * Subir nuevo archivo
@@ -208,9 +209,9 @@ export const useArchivos = () => {
       return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al subir archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al subir archivo';
       setError(errorMessage);
       throw err;
     } finally {
@@ -228,9 +229,9 @@ export const useArchivos = () => {
       await api.delete(ARCHIVOS_URLS.DELETE(id));
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al eliminar archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al eliminar archivo';
       setError(errorMessage);
       throw err;
     } finally {
@@ -249,9 +250,9 @@ export const useArchivos = () => {
       return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al compartir archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al compartir archivo';
       setError(errorMessage);
       throw err;
     } finally {
@@ -270,9 +271,9 @@ export const useArchivos = () => {
       return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al descompartir archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al descompartir archivo';
       setError(errorMessage);
       throw err;
     } finally {
@@ -308,9 +309,9 @@ export const useArchivos = () => {
       return resp;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
-      const errorMessage = axiosError.response?.data?.detail || 
-                          axiosError.response?.data?.message || 
-                          'Error al editar archivo';
+      const errorMessage = axiosError.response?.data?.detail ||
+        axiosError.response?.data?.message ||
+        'Error al editar archivo';
       setError(errorMessage);
       throw err;
     } finally {

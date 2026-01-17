@@ -26,14 +26,14 @@ const HeaderMobile = () => {
             priority
           />
         </div>
-        
+
         {/* Hamburger Button */}
-        <button 
+        <button
           className="flex flex-col justify-around w-[30px] h-[25px] bg-transparent border-none cursor-pointer p-0 z-[1002]"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          <span 
+          <span
             className="w-full h-[3px] rounded-sm transition-all duration-300"
             style={{ backgroundColor: 'var(--color-dark-gray)' }}
             onMouseEnter={(e) => {
@@ -43,7 +43,7 @@ const HeaderMobile = () => {
               e.currentTarget.style.backgroundColor = 'var(--color-dark-gray)'
             }}
           ></span>
-          <span 
+          <span
             className="w-full h-[3px] rounded-sm transition-all duration-300"
             style={{ backgroundColor: 'var(--color-dark-gray)' }}
             onMouseEnter={(e) => {
@@ -53,7 +53,7 @@ const HeaderMobile = () => {
               e.currentTarget.style.backgroundColor = 'var(--color-dark-gray)'
             }}
           ></span>
-          <span 
+          <span
             className="w-full h-[3px] rounded-sm transition-all duration-300"
             style={{ backgroundColor: 'var(--color-dark-gray)' }}
             onMouseEnter={(e) => {
@@ -65,12 +65,12 @@ const HeaderMobile = () => {
           ></span>
         </button>
       </div>
-      
+
       {/* Menu */}
       {isMenuOpen && (
-        <nav 
+        <nav
           className="absolute top-full left-0 right-0 flex flex-col p-4 border-t shadow-lg z-[1000] animate-slideDown"
-          style={{ 
+          style={{
             backgroundColor: 'var(--color-light-gray)',
             borderColor: 'var(--color-dark-gray)'
           }}
@@ -91,7 +91,7 @@ const HeaderMobile = () => {
           </Link>
         </nav>
       )}
-      
+
       <style jsx>{`
         @keyframes slideDown {
           from {

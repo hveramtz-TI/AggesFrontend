@@ -18,7 +18,7 @@ const iconMap: Record<string, React.ReactNode> = {
   FaUsers: <FaUsers size={22} />,
   FaFileAlt: <FaFileAlt size={22} />,
   FaFileInvoice: <FaFileInvoice size={22} />,
-  FaCalendar : <FaCalendar size={22} />,
+  FaCalendar: <FaCalendar size={22} />,
 };
 
 // Define the type for menu items
@@ -53,9 +53,8 @@ const HeaderACDesktop = ({ isActive, logout, userType }: HeaderACDesktopProps) =
             <Link
               key={item.path}
               href={item.path}
-              className={`flex items-center gap-2 text-white no-underline font-medium transition-colors duration-300 hover:text-(--color-primary) ${
-                isActive(item.path) ? 'text-(--color-primary)' : ''
-              }`}
+              className={`flex items-center gap-2 text-white no-underline font-medium transition-colors duration-300 hover:text-(--color-primary) ${isActive(item.path) ? 'text-(--color-primary)' : ''
+                }`}
             >
               {iconMap[item.icon]}
               <span>{item.name}</span>

@@ -3,13 +3,37 @@ import type { NextRequest } from 'next/server'
 
 /**
  * Middleware para protección de rutas
- * Se ejecuta antes de cada request
+ * Se ejecuta antes de cada request en el servidor
  */
 export function middleware(request: NextRequest) {
-  // Middleware deshabilitado - usando localStorage para tokens
-  // El middleware no puede acceder a localStorage (solo cookies)
-  // La protección de rutas se maneja en el cliente
-  
+  const token = request.cookies.get('access_token')?.value
+  const { pathname } = request.nextUrl
+
+  // Rutas públicas que no requieren autenticación
+  const isPublicRoute =
+    pathname === '/' ||
+    pathname === '/login' ||
+    pathname.startsWith('/admin/login') ||
+    pathname.includes('/public/')
+
+  // Si no hay token y no es ruta pública, redirigir a login
+  if (!token && !isPublicRoute) {
+    const loginUrl = pathname.startsWith('/admin')
+      ? new URL('/admin/login', request.url)
+      : new URL('/login', request.url)
+
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Si hay token y trata de ir al login, redirigir al dashboard (evitar login innecesario)
+  if (token && (pathname === '/login' || pathname === '/admin/login')) {
+    const dashboardUrl = pathname.startsWith('/admin')
+      ? new URL('/admin/dashboard', request.url)
+      : new URL('/client/dashboard', request.url)
+
+    return NextResponse.redirect(dashboardUrl)
+  }
+
   return NextResponse.next()
 }
 
@@ -21,12 +45,12 @@ export const config = {
   matcher: [
     /*
      * Match todas las rutas excepto:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc)
+     * - api (API routes internos de Next.js si los hubiera)
+     * - _next/static (archivos estáticos)
+     * - _next/image (optimización de imágenes)
+     * - favicon.ico, .svg, .png, .mp4 (archivos de assets)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4)$).*)',
+
   ],
 }

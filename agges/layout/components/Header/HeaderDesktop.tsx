@@ -18,10 +18,10 @@ const HeaderDesktop = () => {
           priority
         />
       </div>
-      
+
       {/* Navegación */}
       <nav className="flex items-center gap-4">
-        <Link 
+        <Link
           href="/login"
           className="px-6 py-3 rounded text-white text-base font-medium transition-all duration-300 hover:shadow-lg"
           style={{ backgroundColor: 'var(--color-primary)' }}
