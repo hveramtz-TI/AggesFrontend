@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import type { ClienteSimple } from '@/api/models'
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload } from 'react-icons/fa'
 import { useArchivos, useClientes } from '@/hooks'
 import type { Archivo } from '@/api/models'
@@ -15,7 +16,7 @@ export default function ArchivosAdminPage() {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<Archivo | null>(null)
   const [archivos, setArchivos] = useState<Archivo[]>([])
   const [busqueda, setBusqueda] = useState('')
-  const [clientes, setClientes] = useState([])
+  const [clientes, setClientes] = useState<ClienteSimple[]>([])
   // Obtener clientes para el select de compartir
   const { getClientes } = useClientes();
   useEffect(() => {
