@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload } from 'react-icons/fa'
-import { useArchivos } from '@/hooks'
+import { useArchivos, useClientes } from '@/hooks'
 import type { Archivo } from '@/api/models'
+import ArchivoFormModal from '@/components/ArchivoFormModal'
 
 import ArchivosTable from './ArchivosTable'
 import Pagination from '@/components/common/Pagination'
@@ -14,8 +15,22 @@ export default function ArchivosAdminPage() {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<Archivo | null>(null)
   const [archivos, setArchivos] = useState<Archivo[]>([])
   const [busqueda, setBusqueda] = useState('')
+  const [clientes, setClientes] = useState([])
+  // Obtener clientes para el select de compartir
+  const { getClientes } = useClientes();
+  useEffect(() => {
+    const cargarClientes = async () => {
+      try {
+        const data = await getClientes();
+        setClientes(data || []);
+      } catch (error) {
+        setClientes([]);
+      }
+    };
+    cargarClientes();
+  }, [getClientes]);
 
-  const { getArchivos, loading: loadingArchivos, downloadArchivo, deleteArchivo } = useArchivos()
+  const { getArchivos, loading: loadingArchivos, downloadArchivo, deleteArchivo, uploadArchivo, editArchivo, downloading, error } = useArchivos()
 
   // Cargar archivos al montar el componente
   useEffect(() => {
@@ -55,11 +70,16 @@ export default function ArchivosAdminPage() {
     return `${day}/${month}/${year}`
   }
 
+  const [downloadingId, setDownloadingId] = useState<number | null>(null)
   const handleDownload = async (archivo: Archivo) => {
+    setDownloadingId(archivo.id)
     try {
       await downloadArchivo(archivo.id, archivo.nombre_archivo, archivo.tipo_mime)
     } catch (error) {
+      alert('Error al descargar archivo')
       console.error('Error al descargar archivo:', error)
+    } finally {
+      setDownloadingId(null)
     }
   }
 
@@ -161,6 +181,7 @@ export default function ArchivosAdminPage() {
               onEdit={handleEdit}
               onDownload={handleDownload}
               onDelete={handleDelete}
+              downloadingId={downloadingId}
             />
             <Pagination
               currentPage={currentPage}
@@ -170,39 +191,64 @@ export default function ArchivosAdminPage() {
           </>
         )}
 
-        {/* TODO: Agregar modales FormFile y FormEditFile */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold mb-4">Subir Archivo</h2>
-              <p className="text-gray-600 mb-4">Modal de formulario pendiente de implementar</p>
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Modal para subir archivo */}
+        <ArchivoFormModal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onSubmit={async (data) => {
+            try {
+              // Solo se permite un usuario compartido (por compatibilidad backend)
+              const usuarioCompartido = data.compartir_con && data.compartir_con.length > 0 ? data.compartir_con[0] : undefined;
+              await uploadArchivo(
+                data.archivo,
+                data.nombre || data.archivo.name,
+                data.descripcion,
+                usuarioCompartido,
+                data.is_public ?? true
+              );
+              await handleSuccess();
+              setShowModal(false);
+            } catch (e) {
+              // Manejo de error opcional
+            }
+          }}
+          clientes={clientes}
+          isEdit={false}
+        />
 
-        {showEditModal && archivoSeleccionado && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold mb-4">Editar Archivo</h2>
-              <p className="text-gray-600 mb-4">Editando: {archivoSeleccionado.nombre_archivo}</p>
-              <button
-                onClick={() => {
-                  setShowEditModal(false)
-                  setArchivoSeleccionado(null)
-                }}
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Modal para editar archivo */}
+        <ArchivoFormModal
+          open={showEditModal && !!archivoSeleccionado}
+          onClose={() => {
+            setShowEditModal(false);
+            setArchivoSeleccionado(null);
+          }}
+          onSubmit={async (data) => {
+            try {
+              if (!archivoSeleccionado) return;
+              const usuarioCompartido = data.compartir_con && data.compartir_con.length > 0 ? data.compartir_con[0] : undefined;
+              await editArchivo(archivoSeleccionado.id, {
+                nombre: data.nombre,
+                descripcion: data.descripcion,
+                usuario_compartido: usuarioCompartido,
+                is_public: data.is_public,
+              });
+              await handleSuccess();
+              setShowEditModal(false);
+              setArchivoSeleccionado(null);
+            } catch (e) {
+              // Manejo de error opcional
+            }
+          }}
+          clientes={clientes}
+          initialData={archivoSeleccionado ? {
+            nombre: archivoSeleccionado.nombre_archivo,
+            descripcion: archivoSeleccionado.descripcion || '',
+            compartir_con: archivoSeleccionado.usuario_compartido ? [archivoSeleccionado.usuario_compartido] : [],
+            is_public: archivoSeleccionado.visibilidad,
+          } : {}}
+          isEdit={true}
+        />
       </div>
     </div>
   )

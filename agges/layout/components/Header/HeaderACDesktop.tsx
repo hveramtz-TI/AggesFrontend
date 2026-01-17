@@ -31,6 +31,17 @@ interface MenuItem {
 
 const HeaderACDesktop = ({ isActive, logout, userType }: HeaderACDesktopProps) => {
   const filteredMenu = (menu as MenuItem[]).filter((item: MenuItem) => item.admin === (userType === 1));
+  const [loggingOut, setLoggingOut] = React.useState(false);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setLoggingOut(false);
+    }
+  };
 
   return (
     <header className="mr-40 fixed min-h-screen items-center bg-(--color-dark-gray) shadow-[0_2px_4px_rgba(0,0,0,0.2)] max-md:hidden w-auto">
@@ -53,11 +64,12 @@ const HeaderACDesktop = ({ isActive, logout, userType }: HeaderACDesktopProps) =
         </nav>
         <div className="mt-auto">
           <button
-            onClick={logout}
-            className="px-4 py-2 rounded text-white border-none cursor-pointer font-bold transition-all duration-300 hover:bg-[#6fb33d] hover:-translate-y-0.5"
+            onClick={handleLogout}
+            className={`px-4 py-2 rounded text-white border-none cursor-pointer font-bold transition-all duration-300 hover:bg-[#6fb33d] hover:-translate-y-0.5 ${loggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
             style={{ backgroundColor: 'var(--color-primary)' }}
+            disabled={loggingOut}
           >
-            Cerrar Sesión
+            {loggingOut ? 'Cerrando sesión...' : 'Cerrar Sesión'}
           </button>
         </div>
       </div>

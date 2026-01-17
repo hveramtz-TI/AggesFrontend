@@ -10,7 +10,7 @@ const HeaderDesktop = () => {
       {/* Logo */}
       <div className="relative h-[50px] w-auto">
         <Image
-          src="/logo.webp"
+          src="/logo.svg"
           alt="AGGES Logo"
           width={150}
           height={50}

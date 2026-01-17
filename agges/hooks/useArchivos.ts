@@ -190,13 +190,16 @@ export const useArchivos = () => {
     try {
       const formData = new FormData();
       formData.append('archivo', file);
+      formData.append('nombre_archivo', nombreArchivo);
       if (descripcion) {
         formData.append('descripcion', descripcion);
       }
       if (usuarioCompartido) {
         formData.append('usuario_compartido', usuarioCompartido.toString());
       }
-
+      if (typeof visibilidad === 'boolean') {
+        formData.append('visibilidad', visibilidad ? 'true' : 'false');
+      }
       const { data } = await api.post<Archivo>(ARCHIVOS_URLS.UPLOAD, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -277,6 +280,44 @@ export const useArchivos = () => {
     }
   }, []);
 
+  /**
+   * Editar archivo existente (solo admin)
+   * @param id - ID del archivo
+   * @param data - Datos a editar (nombre, descripcion, usuario_compartido, visibilidad)
+   */
+  const editArchivo = useCallback(async (
+    id: number,
+    data: {
+      nombre?: string;
+      descripcion?: string;
+      usuario_compartido?: number;
+      is_public?: boolean;
+    }
+  ): Promise<Archivo | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      if (data.nombre) formData.append('nombre', data.nombre);
+      if (data.descripcion) formData.append('descripcion', data.descripcion);
+      if (data.usuario_compartido) formData.append('usuario_compartido', data.usuario_compartido.toString());
+      if (typeof data.is_public === 'boolean') formData.append('visibilidad', data.is_public ? 'true' : 'false');
+      const { data: resp } = await api.patch<Archivo>(ARCHIVOS_URLS.EDIT(id), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return resp;
+    } catch (err) {
+      const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
+      const errorMessage = axiosError.response?.data?.detail || 
+                          axiosError.response?.data?.message || 
+                          'Error al editar archivo';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     loading,
     downloading,
@@ -287,6 +328,7 @@ export const useArchivos = () => {
     getArchivo,
     downloadArchivo,
     uploadArchivo,
+    editArchivo,
     deleteArchivo,
     shareArchivo,
     unshareArchivo,

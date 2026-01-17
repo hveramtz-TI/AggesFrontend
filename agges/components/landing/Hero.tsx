@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 
 const Hero = () => {
   return (
@@ -29,15 +30,13 @@ const Hero = () => {
       
       {/* Contenido */}
       <div className="max-w-[800px] w-full flex flex-col items-center justify-center relative z-[2] text-center">
-        <div className="flex flex-col items-center gap-8">
-          <h1 className="text-3xl md:text-[4rem] font-bold leading-tight m-0 text-white">
-            Bienvenido a Nuestra Plataforma
-          </h1>
-          
-          <p className="text-lg leading-relaxed opacity-95 m-0 max-w-[600px] text-white">
-            Gestiona tus proyectos de manera eficiente y sostenible
-          </p>
-        </div>
+        <Image 
+          src="/logo.webp" 
+          alt="Logo Agges"
+          width={1000}
+          height={1000}
+          className="mb-6"
+        />
       </div>
     </section>
   )

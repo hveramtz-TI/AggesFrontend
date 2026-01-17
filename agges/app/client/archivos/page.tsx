@@ -1,16 +1,40 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload, FaEdit, FaDownload, FaTrash } from 'react-icons/fa'
+import { FaUpload } from 'react-icons/fa'
 import { useArchivos } from '@/hooks'
 import type { Archivo, User } from '@/api/models'
+import ArchivoFormModal from '@/components/ArchivoFormModal'
+import SearchBar from '@/components/common/SearchBar'
+import Pagination from '@/components/common/Pagination'
+import ArchivosTable from './ArchivosTable'
+
+import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile } from 'react-icons/fa'
+
+function getFileIcon(tipo: string) {
+  const tipoLower = tipo.toLowerCase()
+  if (tipoLower.includes('pdf')) return <FaFilePdf className="text-3xl text-red-600" />
+  if (tipoLower.includes('excel') || tipoLower.includes('sheet')) return <FaFileExcel className="text-3xl text-[var(--color-primary)]" />
+  if (tipoLower.includes('word') || tipoLower.includes('document')) return <FaFileWord className="text-3xl text-blue-500" />
+  if (tipoLower.includes('powerpoint') || tipoLower.includes('presentation')) return <FaFilePowerpoint className="text-3xl text-orange-500" />
+  return <FaFile className="text-3xl text-gray-400" />
+}
+
+function formatFecha(fecha?: string) {
+  if (!fecha) return ''
+  const d = new Date(fecha)
+  return d.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })
+}
 
 export default function ArchivosClientPage() {
-  const { getArchivos, getArchivosCompartidos, downloadArchivo, deleteArchivo } = useArchivos()
+  const { getArchivos, getArchivosCompartidos, uploadArchivo, editArchivo, downloadArchivo, deleteArchivo } = useArchivos()
   const [archivosDelCliente, setArchivosDelCliente] = useState<Archivo[]>([])
+  const [busqueda, setBusqueda] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<Archivo | null>(null)
-  
+
   // Inicializar userId directamente desde localStorage
   const [userId] = useState<number | null>(() => {
     if (typeof window !== 'undefined') {
@@ -34,48 +58,25 @@ export default function ArchivosClientPage() {
           getArchivos(),
           getArchivosCompartidos()
         ])
-        
         // Combinar y eliminar duplicados basándonos en el ID
         const todosLosArchivos = [...archivosPropios.results, ...archivosCompartidos]
         const archivosUnicos = Array.from(
           new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
         )
-        
         setArchivosDelCliente(archivosUnicos)
       } catch (error) {
         console.error('Error al obtener archivos:', error)
       }
     }
-
     fetchArchivos()
   }, [getArchivos, getArchivosCompartidos])
 
-  const getFileIcon = (tipoMime: string) => {
-    const tipo = tipoMime.toLowerCase()
-    if (tipo.includes('pdf')) {
-      return <FaFilePdf className="text-3xl text-red-600" />
-    } else if (tipo.includes('sheet') || tipo.includes('excel')) {
-      return <FaFileExcel className="text-3xl text-[var(--color-primary)]" />
-    } else if (tipo.includes('word') || tipo.includes('document')) {
-      return <FaFileWord className="text-3xl text-blue-500" />
-    } else if (tipo.includes('presentation') || tipo.includes('powerpoint')) {
-      return <FaFilePowerpoint className="text-3xl text-orange-500" />
-    } else {
-      return <FaFile className="text-3xl text-gray-400" />
-    }
+  // Handlers
+  const handleUpload = () => setShowModal(true)
+  const handleEdit = (archivo: Archivo) => {
+    setArchivoSeleccionado(archivo)
+    setShowEditModal(true)
   }
-
-  const formatFecha = (fecha: string) => {
-    const date = new Date(fecha)
-    return date.toLocaleDateString('es-CL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
   const handleDownload = async (archivo: Archivo) => {
     try {
       await downloadArchivo(archivo.id, archivo.nombre_archivo, archivo.tipo_mime)
@@ -84,31 +85,11 @@ export default function ArchivosClientPage() {
     }
   }
 
-  const handleUpload = () => {
-    setShowModal(true)
-  }
-
-  const handleEdit = (archivo: Archivo) => {
-    setArchivoSeleccionado(archivo)
-    setShowEditModal(true)
-  }
-
   const handleDelete = async (archivo: Archivo) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar "${archivo.nombre_archivo}"?`)) {
       try {
         await deleteArchivo(archivo.id)
-        const [archivosPropios, archivosCompartidos] = await Promise.all([
-          getArchivos(),
-          getArchivosCompartidos()
-        ])
-        
-        // Combinar y eliminar duplicados basándonos en el ID
-        const todosLosArchivos = [...archivosPropios.results, ...archivosCompartidos]
-        const archivosUnicos = Array.from(
-          new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
-        )
-        
-        setArchivosDelCliente(archivosUnicos)
+        await handleSuccess()
         alert('Archivo eliminado exitosamente')
       } catch (error) {
         console.error('Error al eliminar archivo:', error)
@@ -116,26 +97,29 @@ export default function ArchivosClientPage() {
       }
     }
   }
-
   const handleSuccess = async () => {
+    // Recargar archivos después de una acción exitosa
     try {
       const [archivosPropios, archivosCompartidos] = await Promise.all([
         getArchivos(),
         getArchivosCompartidos()
       ])
-      
-      // Combinar y eliminar duplicados basándonos en el ID
       const todosLosArchivos = [...archivosPropios.results, ...archivosCompartidos]
       const archivosUnicos = Array.from(
         new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
       )
-      
       setArchivosDelCliente(archivosUnicos)
-      console.log('Archivo procesado exitosamente')
     } catch (error) {
       console.error('Error al recargar archivos:', error)
     }
   }
+
+  // Filtrado y paginación
+  const archivosFiltrados = archivosDelCliente.filter(a =>
+    a.nombre_archivo?.toLowerCase().includes(busqueda.toLowerCase())
+  )
+  const totalPages = Math.ceil(archivosFiltrados.length / pageSize) || 1
+  const paginatedArchivos = archivosFiltrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   return (
     <div className="min-h-screen bg-[var(--color-light-gray)]">
@@ -157,126 +141,78 @@ export default function ArchivosClientPage() {
           </button>
         </div>
 
-        {archivosDelCliente.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📁</div>
-            <p className="text-xl text-gray-600 mb-2">No tienes archivos disponibles</p>
-            <p className="text-sm text-gray-500">Los archivos subidos aparecerán aquí</p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[var(--color-dark-gray)] text-white">
-                  <tr>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider w-16">Tipo</th>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Nombre del Archivo</th>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Fecha de Carga</th>
-                    <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider w-36">Origen</th>
-                    <th className="px-4 py-4 text-center text-xs font-bold uppercase tracking-wider w-48">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {archivosDelCliente.map((archivo: Archivo) => {
-                    // Un archivo es propio si:
-                    // 1. El usuario actual es el propietario Y no está compartido
-                    // 2. O si fue compartido CON el usuario actual (usuario_compartido === userId)
-                    const esPropio = userId && archivo.usuario_propietario === userId && archivo.usuario_compartido === null
-                    const esCompartidoConmigo = userId && archivo.usuario_compartido === userId
-                    
-                    return (
-                      <tr key={archivo.id} className="hover:bg-[var(--color-light-green)] transition-colors border-b border-gray-200">
-                        <td className="px-4 py-4 text-center">
-                          {getFileIcon(archivo.tipo_mime)}
-                        </td>
-                        <td className="px-4 py-4">
-                          <span className="font-semibold text-[var(--color-dark-gray)] max-w-xs break-words">
-                            {archivo.nombre_archivo}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                          {formatFecha(archivo.fecha_carga || archivo.fecha_subida || archivo.fecha_modificacion)}
-                        </td>
-                        <td className="px-4 py-4">
-                          {esPropio ? (
-                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-600 border border-blue-600">
-                              Cliente
-                            </span>
-                          ) : (
-                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 text-[var(--color-primary)] border border-[var(--color-primary)]">
-                              Empresa
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="flex items-center justify-center gap-2">
-                            {esPropio && (
-                              <button
-                                onClick={() => handleEdit(archivo)}
-                                className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
-                                title="Editar"
-                              >
-                                <FaEdit className="text-lg" />
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleDownload(archivo)}
-                              className="p-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[#6fb33d] transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
-                              title="Descargar"
-                            >
-                              <FaDownload className="text-lg" />
-                            </button>
-                            {esPropio && (
-                              <button
-                                onClick={() => handleDelete(archivo)}
-                                className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
-                                title="Eliminar"
-                              >
-                                <FaTrash className="text-lg" />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        <SearchBar
+          value={busqueda}
+          onChange={value => {
+            setBusqueda(value)
+            setCurrentPage(1)
+          }}
+          placeholder="Buscar por nombre de archivo..."
+          className="mb-6"
+        />
+
+        <ArchivosTable
+          archivos={paginatedArchivos}
+          getFileIcon={getFileIcon}
+          formatFecha={formatFecha}
+          onEdit={handleEdit}
+          onDownload={handleDownload}
+          onDelete={handleDelete}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
 
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold mb-4">Subir Archivo</h2>
-              <p className="text-gray-600 mb-4">Modal de formulario pendiente de implementar</p>
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
+          <ArchivoFormModal
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            onSubmit={async (data) => {
+              try {
+                await uploadArchivo(
+                  data.archivo,
+                  data.nombre || data.archivo?.name,
+                  data.descripcion,
+                  undefined,
+                  true
+                )
+                await handleSuccess()
+                setShowModal(false)
+              } catch (error) {
+                console.error('Error al subir archivo:', error)
+              }
+            }}
+          />
         )}
 
         {showEditModal && archivoSeleccionado && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold mb-4">Editar Archivo</h2>
-              <p className="text-gray-600 mb-4">Editando: {archivoSeleccionado.nombre_archivo}</p>
-              <button
-                onClick={() => {
-                  setShowEditModal(false)
-                  setArchivoSeleccionado(null)
-                }}
-                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
+          <ArchivoFormModal
+            open={showEditModal}
+            onClose={() => {
+              setShowEditModal(false)
+              setArchivoSeleccionado(null)
+            }}
+            onSubmit={async (data) => {
+              try {
+                await editArchivo(archivoSeleccionado.id, {
+                  nombre: data.nombre,
+                  descripcion: data.descripcion
+                })
+                await handleSuccess()
+                setShowEditModal(false)
+                setArchivoSeleccionado(null)
+              } catch (error) {
+                console.error('Error al editar archivo:', error)
+              }
+            }}
+            initialData={{
+              nombre: archivoSeleccionado.nombre_archivo,
+              descripcion: archivoSeleccionado.descripcion || ''
+            }}
+            isEdit={true}
+          />
         )}
       </div>
     </div>

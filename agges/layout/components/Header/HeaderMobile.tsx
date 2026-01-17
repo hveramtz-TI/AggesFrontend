@@ -18,7 +18,7 @@ const HeaderMobile = () => {
         {/* Logo */}
         <div className="relative h-[30px] w-auto">
           <Image
-            src="/logo.webp"
+            src="/logo.svg"
             alt="AGGES Logo"
             width={100}
             height={30}

@@ -9,10 +9,9 @@ interface ArchivosTableProps {
   onEdit: (archivo: Archivo) => void
   onDownload: (archivo: Archivo) => void
   onDelete: (archivo: Archivo) => void
-  downloadingId?: number | null
 }
 
-export default function ArchivosTable({ archivos, getFileIcon, formatFecha, onEdit, onDownload, onDelete, downloadingId }: ArchivosTableProps) {
+export default function ArchivosTable({ archivos, getFileIcon, formatFecha, onEdit, onDownload, onDelete }: ArchivosTableProps) {
   if (archivos.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-12 text-center">
@@ -72,15 +71,10 @@ export default function ArchivosTable({ archivos, getFileIcon, formatFecha, onEd
                     </button>
                     <button
                       onClick={() => onDownload(archivo)}
-                      className={`p-2 bg-[var(--color-primary)] text-white rounded-lg transition-all duration-300 hover:bg-[#6fb33d] hover:transform hover:-translate-y-0.5 hover:shadow-md ${downloadingId === archivo.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className="p-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[#6fb33d] transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-md"
                       title="Descargar"
-                      disabled={downloadingId === archivo.id}
                     >
-                      {downloadingId === archivo.id ? (
-                        <span className="text-xs">Descargando...</span>
-                      ) : (
-                        <FaDownload className="text-lg" />
-                      )}
+                      <FaDownload className="text-lg" />
                     </button>
                     <button
                       onClick={() => onDelete(archivo)}
