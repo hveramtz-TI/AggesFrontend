@@ -1,228 +1,245 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+const Chart = dynamic(() => import('../../../components/Chart'), { ssr: false })
+import Calendar from '../../../components/Calendar'
+import { exportToPDF } from '../../../utils/exportUtils'
 
-import dynamic from 'next/dynamic';
-const Chart = dynamic(() => import('../../../components/Chart'), { ssr: false });
-import Calendar from '../../../components/Calendar';
+// Importar datos de prueba y equivalencias
+import materialEquivalents from '../../../data/materialEquivalents.json'
+import mockData from '../../../data/mockDashboardData.json'
+
+// Definir tipos para mayor claridad
+type MaterialKey = keyof typeof materialEquivalents;
 
 export default function ClientDashboard() {
   const router = useRouter()
+  const [timeFilter, setTimeFilter] = useState<'1w' | '1m' | '3m' | '1y'>('1w')
 
-  // Datos simulados del reporte (deben venir del backend)
-  const report = {
-    numero: 465,
-    empresa: "Cliente",
-    mes: "Diciembre",
-    anio: 2025,
-    materiales: {
-      vidrio: 0,
-      plastico: 0,
-      carton: 0,
-      metal: 0,
-      papel: 0,
-      madera: 0,
-      organico: 0,
-      escombro: 7330,
-      otro: 0
-    },
-    tratamiento: {
-      reutilizacion: 0,
-      reparacion: 0,
-      reciclaje: 0,
-      eliminacion: 7330
-    },
-    puntosAGGES: {
-      total: 0
-    }
-  }
+  const report = mockData.currentReport;
+  const services = mockData.currentServices;
+  const history = mockData.totalRecycledHistory[timeFilter];
 
-  const totalGestionado = Object.values(report.materiales).reduce((a, b) => a + b, 0)
-  const totalReciclaje = report.tratamiento.reciclaje + report.tratamiento.reutilizacion + report.tratamiento.reparacion
-  const porcentajeReciclaje = totalGestionado > 0 ? ((totalReciclaje / totalGestionado) * 100).toFixed(2) : '0'
+  // Calcular composición basada en la historia seleccionada
+  const currentComposition = useMemo(() => {
+    const totals: Record<string, number> = {};
+    history.forEach((entry) => {
+      Object.entries(entry).forEach(([key, value]) => {
+        if (key !== 'date') {
+          totals[key] = (totals[key] || 0) + (value as number);
+        }
+      });
+    });
+    return totals;
+  }, [history]);
 
-  const materialPrincipal = Object.entries(report.materiales)
-    .sort(([, a], [, b]) => b - a)[0]
+  // Encontrar el material principal del período seleccionado
+  const materialPrincipalKey = useMemo(() => {
+    return (Object.entries(currentComposition)
+      .sort(([, a], [, b]) => b - a)[0]?.[0] || 'plastico') as MaterialKey;
+  }, [currentComposition]);
+
+  const materialPrincipalAmount = currentComposition[materialPrincipalKey] || 0;
+  const equivalent = materialEquivalents[materialPrincipalKey];
 
   const formatearNumero = (num: number) => {
     return new Intl.NumberFormat('es-CL').format(num)
   }
 
-  // Datos para el gráfico de materiales gestionados
-  const materialesLabels = Object.keys(report.materiales);
-  const materialesData = Object.values(report.materiales);
-  const chartMaterialesData = {
-    labels: materialesLabels,
+  // Datos para el gráfico de barras (Composición del período seleccionado)
+  const chartBarData = {
+    labels: Object.keys(currentComposition).map(k => materialEquivalents[k as MaterialKey]?.label || k),
     datasets: [
       {
-        label: 'Materiales gestionados (kg)',
-        data: materialesData,
+        label: 'Materiales (kg)',
+        data: Object.values(currentComposition),
         backgroundColor: [
-          '#6fb33d', '#f39c12', '#3498db', '#e74c3c', '#9b59b6', '#34495e', '#95a5a6', '#7f8c8d', '#2ecc71'
+          '#b45f06', // Madera
+          '#1abc9c', // Plástico
+          '#7f8c8d', // Escombro
+          '#3498db', // Metal
+          '#f1c40f', // Cartón
+          '#e74c3c', // Orgánico
+          '#9b59b6', // Vidrio
+          '#2ecc71', // Papel
         ],
+        borderRadius: 8,
       },
     ],
-  };
-  const chartMaterialesOptions = {
-    responsive: true,
+  }
+
+  const chartBarOptions = {
     plugins: {
       legend: { display: false },
-      title: { display: true, text: 'Materiales gestionados' },
+      title: { display: true, text: `Composición de Materiales (${timeFilter === '1w' ? '1S' : timeFilter === '1m' ? '1M' : timeFilter === '3m' ? '3M' : '1A'})` },
     },
-  };
+    scales: {
+      y: { beginAtZero: true }
+    }
+  }
+
+  // Datos para el gráfico de líneas (Histórico)
+  const chartLineData = useMemo(() => ({
+    labels: history.map(d => d.date),
+    datasets: [
+      {
+        label: 'Total Reciclado (kg)',
+        data: history.map(d => Object.entries(d).reduce((acc, [k, v]) => k !== 'date' ? acc + (v as number) : acc, 0)),
+        borderColor: '#6fb33d',
+        backgroundColor: 'rgba(111, 179, 61, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+      }
+    ],
+  }), [history])
+
+  const chartLineOptions = {
+    plugins: {
+      legend: { display: false },
+    },
+    scales: {
+      y: { beginAtZero: true }
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[var(--color-light-gray)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8 pb-4 border-b-2 border-gray-200">
-          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--color-dark-gray)] mb-2">
-            Reporte de Gestión de Residuos
-          </h1>
-          <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-600">
-            <p>
-              <strong className="text-[var(--color-dark-gray)] mr-2">Reporte N°:</strong>
-              {report.numero}
-            </p>
-            <p>
-              <strong className="text-[var(--color-dark-gray)] mr-2">Empresa:</strong>
-              {report.empresa}
-            </p>
-            <p>
-              <strong className="text-[var(--color-dark-gray)] mr-2">Período:</strong>
-              {report.mes} {report.anio}
-            </p>
-          </div>
-        </div>
-
-        {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-[var(--color-primary)] transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="text-4xl">📦</div>
-              <div className="flex-1">
-                <h3 className="text-xs uppercase font-bold text-gray-600 mb-1">Total Gestionado</h3>
-                <p className="text-3xl font-bold text-[var(--color-dark-gray)]">
-                  {formatearNumero(totalGestionado)}
-                </p>
-                <span className="text-xs text-gray-500">kg</span>
+    <div className="min-h-screen bg-[#f8f9fa] p-4 sm:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header con estilo de la imagen */}
+        <header className="mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">Panel de Impacto Ambiental y Servicios</h1>
+              <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-500 font-medium">
+                <p>Reporte N°: <span className="text-gray-700">{report.numero}</span></p>
+                <p>Empresa: <span className="text-gray-700">{report.empresa}</span></p>
+                <p>Período: <span className="text-gray-700">{report.periodo}</span></p>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#6fb33d] transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="text-4xl">♻️</div>
-              <div className="flex-1">
-                <h3 className="text-xs uppercase font-bold text-gray-600 mb-1">Reciclaje</h3>
-                <p className="text-3xl font-bold text-[var(--color-dark-gray)]">
-                  {porcentajeReciclaje}%
-                </p>
-                <span className="text-xs text-gray-500">{formatearNumero(totalReciclaje)} kg</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#f39c12] transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="text-4xl">📊</div>
-              <div className="flex-1">
-                <h3 className="text-xs uppercase font-bold text-gray-600 mb-1">Material Principal</h3>
-                <p className="text-2xl font-bold text-[var(--color-dark-gray)] capitalize">
-                  {materialPrincipal[0]}
-                </p>
-                <span className="text-xs text-gray-500">{formatearNumero(materialPrincipal[1])} kg</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#9dd46a] transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="text-4xl">⭐</div>
-              <div className="flex-1">
-                <h3 className="text-xs uppercase font-bold text-gray-600 mb-1">Puntos AGGES</h3>
-                <p className="text-3xl font-bold text-[var(--color-dark-gray)]">
-                  {formatearNumero(report.puntosAGGES.total)}
-                </p>
-                <span className="text-xs text-gray-500">puntos acumulados</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Gráfico de materiales gestionados */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <Chart type="bar" data={chartMaterialesData} options={chartMaterialesOptions} height={80} />
-        </div>
-
-        {/* Sección de accesos rápidos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-[var(--color-primary)] bg-opacity-10 rounded-lg">
-                <svg className="w-8 h-8 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-[var(--color-dark-gray)]">Cotizaciones</h3>
-                <p className="text-sm text-gray-600">Solicita nuevos servicios</p>
-              </div>
-            </div>
             <button
-              onClick={() => router.push('/client/cotizacion')}
-              className="w-full py-2 px-4 bg-[var(--color-primary)] text-white rounded-lg font-semibold hover:bg-[#6fb33d] transition-colors"
+              onClick={() => exportToPDF('client-dashboard-content', `informe-cliente-${report.empresa.replace(/\s+/g, '-').toLowerCase()}`)}
+              className="no-export flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-md"
             >
-              Ver Cotizaciones
+              <span>📥</span> Descargar Informe PDF
             </button>
           </div>
+        </header>
 
-          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg">
-                <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-[var(--color-dark-gray)]">Archivos</h3>
-                <p className="text-sm text-gray-600">Gestiona tus documentos</p>
-              </div>
+        <div id="client-dashboard-content">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Columna Principal (Izquierda) */}
+            <div className="lg:col-span-2 space-y-8">
+
+              {/* Card de Impacto Principal (Rediseñado según imagen) */}
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 overflow-hidden relative">
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  {/* Visualización del flujo */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-6xl">{equivalent.icon}</div>
+                    <div className="text-gray-300">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-full">
+                      <div className="text-3xl">♻️</div>
+                    </div>
+                    <div className="text-gray-300">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
+                    <div className="text-6xl opacity-80">🏙️</div>
+                  </div>
+
+                  {/* Información de Impacto */}
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                      Impacto Principal: {equivalent.label} → {equivalent.unidad_destino.split('(')[0]}
+                    </h2>
+                    <p className="text-gray-500 mb-4">Material Más Reciclado: <span className="font-semibold text-gray-700">{equivalent.label} ({formatearNumero(materialPrincipalAmount)} kg)</span></p>
+
+                    <div className="mt-4">
+                      <p className="text-gray-400 text-sm uppercase font-bold tracking-wider">Equivale a:</p>
+                      <p className="text-4xl font-extrabold text-[#6fb33d]">
+                        {formatearNumero(Math.round(materialPrincipalAmount * equivalent.factor))} {equivalent.unidad_destino}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Gráfico Histórico con Filtros */}
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                  <h3 className="text-xl font-bold text-gray-800">Tendencia de Reciclaje</h3>
+                  <div className="flex bg-gray-100 p-1 rounded-xl">
+                    {(['1w', '1m', '3m', '1y'] as const).map((filter) => (
+                      <button
+                        key={filter}
+                        onClick={() => setTimeFilter(filter)}
+                        className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${timeFilter === filter
+                          ? 'bg-white text-[#6fb33d] shadow-sm'
+                          : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                      >
+                        {filter === '1w' ? '1S' : filter === '1m' ? '1M' : filter === '3m' ? '3M' : '1A'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Chart type="line" data={chartLineData} options={chartLineOptions} height={250} />
+              </section>
+
+              {/* Composición de Materiales */}
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <Chart type="bar" data={chartBarData} options={chartBarOptions} height={250} />
+              </section>
             </div>
-            <button
-              onClick={() => router.push('/client/archivos')}
-              className="w-full py-2 px-4 bg-[var(--color-primary)] text-white rounded-lg font-semibold hover:bg-[#6fb33d] transition-colors"
-            >
-              Ver Archivos
-            </button>
-          </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-gray-300 bg-opacity-50 rounded-lg">
-                <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-[var(--color-dark-gray)]">Reportes</h3>
-                <p className="text-sm text-gray-600">Próximamente disponible</p>
-              </div>
-            </div>
-            <button
-              disabled
-              className="w-full py-2 px-4 bg-gray-300 text-gray-600 rounded-lg font-semibold cursor-not-allowed"
-            >
-              Próximamente
-            </button>
-          </div>
-        </div>
+            {/* Columna Lateral (Derecha) */}
+            <aside className="space-y-8">
+              {/* Estado de Servicios */}
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-6">Estado de Servicios por Tomador</h3>
+                <div className="space-y-4 mb-8">
+                  {services.map((service) => (
+                    <div key={service.id} className="group p-4 rounded-xl border border-gray-50 hover:border-green-100 hover:bg-green-50/30 transition-all">
+                      <div className="flex justify-between items-start mb-1">
+                        <div>
+                          <h4 className="font-bold text-gray-800">{service.type}</h4>
+                          <p className="text-xs text-gray-400 mt-0.5">(Tomador: {service.requester}) - {service.date}</p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${service.statusColor === 'orange' ? 'bg-orange-100 text-orange-600' :
+                          service.statusColor === 'green' ? 'bg-green-100 text-green-600' :
+                            'bg-blue-100 text-blue-600'
+                          }`}>
+                          {service.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => router.push('/client/cotizacion')}
+                  className="w-full py-4 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all shadow-sm"
+                >
+                  Solicitar Nuevo Servicio
+                </button>
+              </section>
 
-        {/* Actividad Reciente */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-2xl font-bold text-[var(--color-dark-gray)] mb-4">Actividad Reciente</h2>
-          <div className="flex flex-col items-center justify-center py-8">
-            <Calendar />
+              {/* Calendario de Actividad */}
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Actividad Registrada</h3>
+                <div className="overflow-hidden rounded-xl">
+                  <Calendar />
+                </div>
+              </section>
+            </aside>
           </div>
         </div>
       </div>

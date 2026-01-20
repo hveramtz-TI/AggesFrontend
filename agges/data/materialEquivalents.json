@@ -1,0 +1,50 @@
+{
+  "plastico": {
+    "unidad_destino": "Nuevas Botellas de PET (500ml)",
+    "factor": 2,
+    "label": "Plástico",
+    "icon": "🥤"
+  },
+  "papel": {
+    "unidad_destino": "Cuadernos (100 hojas)",
+    "factor": 0.2,
+    "label": "Papel",
+    "icon": "📄"
+  },
+  "carton": {
+    "unidad_destino": "Cajas de embalaje",
+    "factor": 1.5,
+    "label": "Cartón",
+    "icon": "📦"
+  },
+  "metal": {
+    "unidad_destino": "Latas de aluminio",
+    "factor": 15,
+    "label": "Metal",
+    "icon": "🥫"
+  },
+  "vidrio": {
+    "unidad_destino": "Frascos de conservas",
+    "factor": 4,
+    "label": "Vidrio",
+    "icon": "🏺"
+  },
+  "madera": {
+    "unidad_destino": "Tablas de pino",
+    "factor": 0.8,
+    "label": "Madera",
+    "icon": "🪵"
+  },
+  "organico": {
+    "unidad_destino": "Kg de Compost de alta calidad",
+    "factor": 0.5,
+    "label": "Orgánico",
+    "icon": "🍎"
+  },
+  "escombro": {
+    "unidad_destino": "Metros de base estabilizada",
+    "factor": 0.05,
+    "label": "Escombro",
+    "icon": "🏗️"
+  }
+}

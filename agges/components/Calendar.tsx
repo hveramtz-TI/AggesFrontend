@@ -39,7 +39,7 @@ const Calendar = () => {
   ];
 
   // Generar celdas vacías para los días antes del primer día del mes
-  const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => <div key={"b"+i}></div>);
+  const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => <div key={"b" + i}></div>);
   // Generar los días del mes
   const days = Array.from({ length: daysInMonth }, (_, i) => {
     const day = i + 1;
@@ -50,7 +50,7 @@ const Calendar = () => {
     return (
       <div
         key={day}
-        className={`flex items-center justify-center h-10 w-full rounded-full cursor-pointer transition-colors font-medium ${isToday ? 'bg-[var(--color-primary)] text-[var(--color-white)] font-bold' : 'hover:bg-[var(--color-light-green)] text-[var(--color-dark-gray)]'}`}
+        className={`flex items-center justify-center h-10 w-full rounded-full cursor-pointer transition-colors font-medium ${isToday ? 'bg-(--color-primary) text-(--color-white) font-bold' : 'hover:bg-(--color-light-green) text-(--color-dark-gray)'}`}
       >
         {day}
       </div>
@@ -58,23 +58,23 @@ const Calendar = () => {
   });
 
   return (
-    <div className="w-full mx-auto p-4 bg-[var(--color-white)] rounded-lg shadow-md border border-[var(--color-light-green)]">
+    <div className="w-full mx-auto p-4 bg-(--color-white) rounded-lg shadow-md border border-(--color-light-green)">
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={prevMonth}
-          className="px-2 py-1 rounded hover:bg-[var(--color-light-green)] text-[var(--color-primary)] font-bold text-lg"
+          className="px-2 py-1 rounded hover:bg-(--color-light-green) text-(--color-primary) font-bold text-lg"
           aria-label="Mes anterior"
         >&#8592;</button>
-        <div className="font-semibold text-lg text-[var(--color-dark-gray)]">{monthNames[currentMonth]} {currentYear}</div>
+        <div className="font-semibold text-lg text-(--color-dark-gray)">{monthNames[currentMonth]} {currentYear}</div>
         <button
           onClick={nextMonth}
-          className="px-2 py-1 rounded hover:bg-[var(--color-light-green)] text-[var(--color-primary)] font-bold text-lg"
+          className="px-2 py-1 rounded hover:bg-(--color-light-green) text-(--color-primary) font-bold text-lg"
           aria-label="Mes siguiente"
         >&#8594;</button>
       </div>
       <div className="grid grid-cols-7 gap-1 mb-2">
         {daysOfWeek.map((d) => (
-          <div key={d} className="text-center font-bold text-[var(--color-primary)]">{d}</div>
+          <div key={d} className="text-center font-bold text-(--color-primary)">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">

@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks';
 import Cookies from 'js-cookie';
-import HeaderACDesktop from './components/Header/HeaderACDesktop';
-import HeaderACMobile from './components/Header/HeaderACMobile';
+import Sidebar from './components/Sidebar/Sidebar';
+import SidebarMobile from './components/Sidebar/SidebarMobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [userType, setUserType] = useState<number | undefined>(undefined); // 1 = admin, 0 = cliente
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const userTypeValue = localStorage.getItem('user_type');
@@ -53,12 +55,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     return null;
   }
   return (
-    <div className="flex flex-row min-h-screen w-full">
-      {/* Sidebar Desktop */}
-      <HeaderACDesktop isActive={isActive} logout={logout} userType={userType} />
-      {/* Mobile Navigation */}
-      <HeaderACMobile isActive={isActive} logout={logout} open={open} setOpen={setOpen} userType={userType} />
-      <main className="flex-1 max-md:p-4 md:ml-[170px] bg-[var(--color-light-green)] overflow-y-auto">
+    <div className="flex flex-row h-screen w-full overflow-hidden">
+      {!isMobile && (
+        <Sidebar isActive={isActive} logout={logout} userType={userType} />
+      )}
+      {isMobile && (
+        <SidebarMobile isActive={isActive} logout={logout} open={open} setOpen={setOpen} userType={userType} />
+      )}
+      <main className="flex-1 max-md:p-4 bg-[var(--color-light-green)] overflow-y-auto">
         {children}
       </main>
     </div>

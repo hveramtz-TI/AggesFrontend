@@ -1,0 +1,194 @@
+{
+    "totalRecycledHistory": {
+        "1w": [
+            {
+                "date": "2026-01-12",
+                "plastico": 50,
+                "papel": 30,
+                "metal": 10,
+                "vidrio": 5,
+                "escombro": 1000
+            },
+            {
+                "date": "2026-01-13",
+                "plastico": 45,
+                "papel": 25,
+                "metal": 15,
+                "vidrio": 10,
+                "escombro": 1200
+            },
+            {
+                "date": "2026-01-14",
+                "plastico": 60,
+                "papel": 40,
+                "metal": 20,
+                "vidrio": 8,
+                "escombro": 900
+            },
+            {
+                "date": "2026-01-15",
+                "plastico": 55,
+                "papel": 35,
+                "metal": 12,
+                "vidrio": 12,
+                "escombro": 1500
+            },
+            {
+                "date": "2026-01-16",
+                "plastico": 70,
+                "papel": 45,
+                "metal": 18,
+                "vidrio": 15,
+                "escombro": 1100
+            },
+            {
+                "date": "2026-01-17",
+                "plastico": 65,
+                "papel": 38,
+                "metal": 14,
+                "vidrio": 11,
+                "escombro": 1300
+            },
+            {
+                "date": "2026-01-18",
+                "plastico": 80,
+                "papel": 50,
+                "metal": 22,
+                "vidrio": 18,
+                "escombro": 1400
+            }
+        ],
+        "1m": [
+            {
+                "date": "Semana 1",
+                "plastico": 250,
+                "papel": 180,
+                "metal": 80,
+                "vidrio": 50,
+                "escombro": 5000
+            },
+            {
+                "date": "Semana 2",
+                "plastico": 280,
+                "papel": 210,
+                "metal": 95,
+                "vidrio": 65,
+                "escombro": 5500
+            },
+            {
+                "date": "Semana 3",
+                "plastico": 310,
+                "papel": 195,
+                "metal": 105,
+                "vidrio": 70,
+                "escombro": 4800
+            },
+            {
+                "date": "Semana 4",
+                "plastico": 340,
+                "papel": 225,
+                "metal": 115,
+                "vidrio": 85,
+                "escombro": 6000
+            }
+        ],
+        "3m": [
+            {
+                "date": "Nov 2025",
+                "plastico": 1100,
+                "papel": 800,
+                "metal": 400,
+                "vidrio": 250,
+                "escombro": 22000
+            },
+            {
+                "date": "Dic 2025",
+                "plastico": 1250,
+                "papel": 900,
+                "metal": 450,
+                "vidrio": 280,
+                "escombro": 25000
+            },
+            {
+                "date": "Ene 2026",
+                "plastico": 1400,
+                "papel": 950,
+                "metal": 480,
+                "vidrio": 310,
+                "escombro": 28000
+            }
+        ],
+        "1y": [
+            {
+                "date": "2025 T1",
+                "plastico": 3000,
+                "papel": 2500,
+                "metal": 1200,
+                "vidrio": 800,
+                "escombro": 65000
+            },
+            {
+                "date": "2025 T2",
+                "plastico": 3500,
+                "papel": 2800,
+                "metal": 1400,
+                "vidrio": 950,
+                "escombro": 70000
+            },
+            {
+                "date": "2025 T3",
+                "plastico": 3200,
+                "papel": 2600,
+                "metal": 1300,
+                "vidrio": 850,
+                "escombro": 68000
+            },
+            {
+                "date": "2025 T4",
+                "plastico": 4000,
+                "papel": 3000,
+                "metal": 1600,
+                "vidrio": 1100,
+                "escombro": 75000
+            }
+        ]
+    },
+    "currentServices": [
+        {
+            "id": 1,
+            "type": "Retiro de Escombros",
+            "requester": "Juan P.",
+            "date": "18 Ene",
+            "status": "En Ruta",
+            "statusColor": "orange"
+        },
+        {
+            "id": 2,
+            "type": "Reciclaje Madera",
+            "requester": "Ana C.",
+            "date": "15 Ene",
+            "status": "Completado",
+            "statusColor": "green"
+        },
+        {
+            "id": 3,
+            "type": "Contenedor Plástico",
+            "requester": "Carlos M.",
+            "date": "10 Ene",
+            "status": "Certificado Listo",
+            "statusColor": "blue"
+        }
+    ],
+    "currentReport": {
+        "numero": 465,
+        "empresa": "Constructora Cliente",
+        "periodo": "Enero 2026",
+        "materiales": {
+            "madera": 4200,
+            "plastico": 1800,
+            "escombro": 7230,
+            "metal": 2260,
+            "carton": 1200
+        }
+    }
+}

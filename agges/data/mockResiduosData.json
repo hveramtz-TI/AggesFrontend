@@ -1,0 +1,104 @@
+{
+    "stats": {
+        "huellaCarbono": {
+            "valor": "24.5",
+            "unidad": "tCO2e",
+            "cambio": "-12%",
+            "estado": "bueno"
+        },
+        "huellaEcologica": {
+            "valor": "12.8",
+            "unidad": "gha",
+            "cambio": "Nivel Óptimo",
+            "estado": "neutro"
+        },
+        "huellaHidrica": {
+            "valor": "150.2",
+            "unidad": "m³",
+            "cambio": "Ahorro 5000L",
+            "estado": "bueno"
+        }
+    },
+    "registros": [
+        {
+            "material": "Cartón",
+            "reuso": 45,
+            "reparacion": 10,
+            "enfardado": 120,
+            "triturado": 0,
+            "reciclaje": 285,
+            "ecoCir": 15,
+            "eliminacion": 5
+        },
+        {
+            "material": "Papel",
+            "reuso": 30,
+            "reparacion": 0,
+            "enfardado": 200,
+            "triturado": 0,
+            "reciclaje": 150,
+            "ecoCir": 20,
+            "eliminacion": 2
+        },
+        {
+            "material": "Plástico",
+            "reuso": 15,
+            "reparacion": 5,
+            "enfardado": 150,
+            "triturado": 80,
+            "reciclaje": 110,
+            "ecoCir": 45,
+            "eliminacion": 8
+        },
+        {
+            "material": "Metal",
+            "reuso": 60,
+            "reparacion": 40,
+            "enfardado": 0,
+            "triturado": 30,
+            "reciclaje": 220,
+            "ecoCir": 10,
+            "eliminacion": 0
+        },
+        {
+            "material": "Vidrio",
+            "reuso": 80,
+            "reparacion": 0,
+            "enfardado": 0,
+            "triturado": 150,
+            "reciclaje": 300,
+            "ecoCir": 25,
+            "eliminacion": 1
+        },
+        {
+            "material": "Orgánico",
+            "reuso": 0,
+            "reparacion": 0,
+            "enfardado": 0,
+            "triturado": 0,
+            "reciclaje": 400,
+            "ecoCir": 120,
+            "eliminacion": 15
+        },
+        {
+            "material": "Escombro",
+            "reuso": 0,
+            "reparacion": 0,
+            "enfardado": 0,
+            "triturado": 500,
+            "reciclaje": 0,
+            "ecoCir": 50,
+            "eliminacion": 200
+        },
+        {
+            "material": "Otros",
+            "reuso": 10,
+            "reparacion": 2,
+            "enfardado": 20,
+            "triturado": 15,
+            "reciclaje": 45,
+            "ecoCir": 5,
+            "eliminacion": 30
+        }
+    ]
+}
