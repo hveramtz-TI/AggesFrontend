@@ -1,6 +1,6 @@
 import React from 'react'
 import { FaEdit, FaTrash, FaFolder } from 'react-icons/fa'
-import type { ClienteSimple } from '@/api/models'
+import type { ClienteSimple } from '@/api'
 
 interface ClientesTableProps {
   clientes: ClienteSimple[]

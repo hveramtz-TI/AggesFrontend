@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { AxiosError } from 'axios';
-import type { Archivo, ArchivoListResponse, ArchivoUploadData } from '@/api/models';
+import type { Archivo, ArchivoListResponse, ArchivoUploadData } from '@/api';
 import { api } from '@/api/client';
-import { ARCHIVOS_URLS } from '@/api/urls';
+import { ARCHIVOS_URLS } from '@/api';
 
 /**
  * Hook personalizado para gestión de archivos

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useClientes } from '@/hooks'
-import type { ClienteSimple } from '@/api/models'
+import type { ClienteSimple } from '@/api'
 
 import ClientesTable from './ClientesTable'
 import Pagination from '@/components/common/Pagination'

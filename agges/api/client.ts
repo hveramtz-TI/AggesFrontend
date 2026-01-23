@@ -17,7 +17,7 @@ import { AUTH_URLS } from './urls'
  */
 
 // Configuración: Cambiar a true para usar el backend local
-const IS_LOCAL = false
+const IS_LOCAL = true
 
 // URLs del backend
 const LOCAL_API_URL = 'http://127.0.0.1:8000'

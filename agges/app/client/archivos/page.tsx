@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { FaUpload } from 'react-icons/fa'
 import { useArchivos } from '@/hooks'
-import type { Archivo, User } from '@/api/models'
+import type { Archivo, User } from '@/api'
 import ArchivoFormModal from '@/components/ArchivoFormModal'
 import SearchBar from '@/components/common/SearchBar'
 import Pagination from '@/components/common/Pagination'

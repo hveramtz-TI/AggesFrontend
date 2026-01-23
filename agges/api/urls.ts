@@ -36,19 +36,8 @@ export const CLIENTES_URLS = {
 // ============================================
 // ARCHIVOS/DOCUMENTOS
 // ============================================
-export const ARCHIVOS_URLS = {
-  LIST: '/api/documentos/',
-  DETAIL: (id: number) => `/api/documentos/${id}/`,
-  // POST - Cargar documento (multipart/form-data)
-  // Body: archivo (File), descripcion (string), usuario_compartido (int - solo admin, obligatorio)
-  UPLOAD: '/api/documentos/',
-  DOWNLOAD: (id: number) => `/api/documentos/${id}/descargar/`,
-  EDIT: (id: number) => `/api/documentos/${id}/editar/`,
-  DELETE: (id: number) => `/api/documentos/${id}/eliminar/`,
-  SHARED: '/api/documentos/compartidos/',
-  SHARE: (id: number) => `/api/documentos/${id}/share/`,
-  UNSHARE: (id: number) => `/api/documentos/${id}/unshare/`,
-} as const
+
+// Movido a api/apps/documentos/urls.ts
 
 // ============================================
 // COTIZACIONES

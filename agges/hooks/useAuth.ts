@@ -3,8 +3,8 @@ import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { api } from '@/api/client';
-import { AUTH_URLS } from '@/api/urls';
-import type { LoginCredentials, LoginResponse } from '@/api/models';
+import { AUTH_URLS } from '@/api';
+import type { LoginCredentials, LoginResponse } from '@/api';
 
 export const useAuth = () => {
     const [loading, setLoading] = useState(false);

@@ -4,7 +4,7 @@ import React from 'react'
 import { useAuth, useForm } from '@/hooks'
 
 interface LoginFormValues {
-  email: string
+  rut: string
   password: string
 }
 
@@ -18,26 +18,23 @@ export default function AdminLoginPage() {
     handleChange,
     handleBlur,
     handleSubmit
-  } = useForm<LoginFormValues>({
+  } = useForm<{ rut: string; password: string }>({
     initialValues: {
-      email: '',
+      rut: '',
       password: ''
     },
     validate: (values) => {
-      const errors: Partial<Record<keyof LoginFormValues, string>> = {}
-      
-      if (!values.email) {
-        errors.email = 'El correo es requerido'
-      } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-        errors.email = 'El correo no es válido'
+      const errors: Partial<Record<'rut' | 'password', string>> = {}
+      if (!values.rut) {
+        errors.rut = 'El RUT es requerido'
+      } else if (!/^\d+$/.test(values.rut)) {
+        errors.rut = 'Solo se permiten números'
       }
-      
       if (!values.password) {
         errors.password = 'La contraseña es requerida'
       } else if (values.password.length < 6) {
         errors.password = 'La contraseña debe tener al menos 6 caracteres'
       }
-      
       return errors
     },
     onSubmit: async (values) => {
@@ -61,22 +58,25 @@ export default function AdminLoginPage() {
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col">
-            <label htmlFor="email" className="block mb-2 text-[var(--color-dark-gray)] font-bold text-[0.9rem]">
-              Correo
+            <label htmlFor="rut" className="block mb-2 text-[var(--color-dark-gray)] font-bold text-[0.9rem]">
+              RUT
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={values.email}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9.\-kK]*"
+              id="rut"
+              name="rut"
+              placeholder="12.345.678-9"
+              value={values.rut}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={loading}
               className="w-full px-4 py-4 border-2 border-[var(--color-light-gray)] rounded-lg text-base transition-all duration-300 focus:outline-none focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_rgba(131,202,74,0.1)] disabled:opacity-60 disabled:cursor-not-allowed"
             />
-            {touched.email && formErrors.email && (
+            {touched.rut && formErrors.rut && (
               <span className="text-[#c82333] text-sm mt-2 block font-medium">
-                {formErrors.email}
+                {formErrors.rut}
               </span>
             )}
           </div>

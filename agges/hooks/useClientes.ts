@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { AxiosError } from 'axios';
-import type { ClienteSimple } from '@/api/models';
+import type { ClienteSimple } from '@/api';
 import { api } from '@/api/client';
-import { CLIENTES_URLS } from '@/api/urls';
+import { CLIENTES_URLS } from '@/api';
 
 /**
  * Hook personalizado para gestión de clientes

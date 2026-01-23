@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { FaFileUpload } from 'react-icons/fa';
 import type { ArchivoUploadDataExtended } from '@/types';
-import type { Cliente } from '@/api/models';
-import type {ClienteSimple} from '@/api/models';
+import type { Cliente, ClienteSimple } from '@/api';
 
 interface ArchivoFormModalProps {
   open: boolean;

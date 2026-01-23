@@ -1,6 +1,6 @@
 import React from 'react'
 import { FaEdit, FaDownload, FaTrash } from 'react-icons/fa'
-import type { Archivo } from '@/api/models'
+import type { Archivo } from '@/api'
 
 interface ArchivosTableProps {
   archivos: Archivo[]

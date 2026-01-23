@@ -1,9 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import type { ClienteSimple } from '@/api/models'
+import type { ClienteSimple, Archivo } from '@/api'
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload } from 'react-icons/fa'
 import { useArchivos, useClientes } from '@/hooks'
-import type { Archivo } from '@/api/models'
 import ArchivoFormModal from '@/components/ArchivoFormModal'
 
 import ArchivosTable from './ArchivosTable'
