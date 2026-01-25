@@ -70,8 +70,9 @@ export interface PasswordChange {
 // Respuesta de GET /api/getclients/
 export interface ClienteSimple {
   id: number
-  razonSocial: string
-  rut: string
+  username: string
+  email: string
+  rut:string
 }
 
 export interface Cliente {
@@ -123,24 +124,6 @@ export interface ClienteListResponse {
 // ============================================
 // COTIZACIONES
 // ============================================
-
-export interface Material {
-  id: number
-  nombre: string
-  descripcion?: string
-  unidad: string // kg, ton, m3, etc.
-  precio_base: number
-  is_active: boolean
-}
-
-export interface Submaterial {
-  id: number
-  material: number
-  nombre: string
-  descripcion?: string
-  factor_precio: number // Multiplicador del precio base
-  is_active: boolean
-}
 
 export interface Region {
   id: number
@@ -239,7 +222,6 @@ export interface ProyectoCreateData {
   presupuesto?: number
   responsable?: string
 }
-
 // ============================================
 // DASHBOARD
 // ============================================

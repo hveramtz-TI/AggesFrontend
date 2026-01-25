@@ -28,13 +28,13 @@ export default function ClientesTable({ clientes, onEditar, onEliminar, onVerArc
         <thead className="bg-[var(--color-light-green)]">
           <tr>
             <th className="px-4 py-4 text-left font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-              Usuario
+              Nombre
             </th>
             <th className="px-4 py-4 text-left font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
               Email
             </th>
             <th className="px-4 py-4 text-left font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
-              Fecha Registro
+              Rut
             </th>
             <th className="px-4 py-4 text-center font-bold text-[var(--color-dark-gray)] text-xs uppercase tracking-wider">
               Estado
@@ -51,18 +51,20 @@ export default function ClientesTable({ clientes, onEditar, onEliminar, onVerArc
               className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
             >
               <td className="px-4 py-4 font-bold text-[var(--color-dark-gray)] max-w-[250px]">
-                {cliente.razonSocial}
+                {/* Nombre: username */}
+                {cliente.username ?? '-'}
               </td>
               <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                {cliente.rut}
+                {/* Email */}
+                {cliente.email ?? '-'}
               </td>
               <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                {/* No hay date_joined, se puede dejar vacío o mostrar '-' */}
-                -
+                {/* Rut */}
+                {cliente.rut ?? '-'}
               </td>
               <td className="px-4 py-4 text-center">
-                {/* No hay is_active, se puede dejar vacío o mostrar un switch deshabilitado */}
-                -
+                {/* Estado: activo/inactivo si existe is_active */}
+                {'is_active' in cliente ? (cliente.is_active ? 'Activo' : 'Inactivo') : '-'}
               </td>
               <td className="px-4 py-4">
                 <div className="flex gap-2 justify-end">

@@ -1,44 +1,26 @@
 [
   {
     "objeto": "papel",
-    "nombre": "Papel (hojas A4)",
-    "unidad": "hojas",
-    "conversion": 10000,
-    "formula": "1000kg madera → 10,000 hojas A4"
+    "formula": "kg * 10"
   },
   {
     "objeto": "cuaderno",
-    "nombre": "Cuaderno",
-    "unidad": "cuadernos",
-    "conversion": 200,
-    "formula": "1000kg madera → 200 cuadernos"
+    "formula": "kg * 0.2"
   },
   {
     "objeto": "escritorio",
-    "nombre": "Escritorio",
-    "unidad": "escritorios",
-    "conversion": 5,
-    "formula": "1000kg madera → 5 escritorios"
+    "formula": "kg * 0.005"
   },
   {
     "objeto": "silla",
-    "nombre": "Silla",
-    "unidad": "sillas",
-    "conversion": 10,
-    "formula": "1000kg madera → 10 sillas"
+    "formula": "kg * 0.01"
   },
   {
     "objeto": "palet",
-    "nombre": "Palet",
-    "unidad": "palets",
-    "conversion": 6,
-    "formula": "1000kg madera → 6 palets"
+    "formula": "kg * 0.006"
   },
   {
     "objeto": "caja",
-    "nombre": "Caja",
-    "unidad": "cajas",
-    "conversion": 50,
-    "formula": "1000kg madera → 50 cajas"
+    "formula": "kg * 0.05"
   }
 ]

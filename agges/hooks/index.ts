@@ -3,3 +3,4 @@ export { useForm } from './useForm';
 export { useFetch } from './useFetch';
 export { useArchivos } from './useArchivos';
 export { useClientes } from './useClientes';
+export { useMateriales } from './useMateriales';

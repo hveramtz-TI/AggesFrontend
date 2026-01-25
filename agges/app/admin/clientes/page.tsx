@@ -6,7 +6,9 @@ import type { ClienteSimple } from '@/api'
 import ClientesTable from './ClientesTable'
 import Pagination from '@/components/common/Pagination'
 import SearchBar from '@/components/common/SearchBar'
-import Modal from '@/components/Modal'
+import ModalCreateClient from './ModalCreateClient'
+import ModalEditClient from './ModalEditClient'
+
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<ClienteSimple[]>([])
@@ -22,11 +24,12 @@ export default function ClientesPage() {
     const cargarClientes = async () => {
       try {
         const data = await getClientes()
-        // Mapear a ClienteSimple (id, razonSocial, rut)
-        const clientesMapeados: ClienteSimple[] = data.map((cliente: { id: number; razonSocial?: string; rut?: string }) => ({
+        // Mapear a ClienteSimple (id, username, rut, email)
+        const clientesMapeados: ClienteSimple[] = data.map((cliente: { id: number; username?: string; rut?: string; email?: string }) => ({
           id: cliente.id,
-          razonSocial: cliente.razonSocial ?? '',
+          username: cliente.username ?? '',
           rut: cliente.rut ?? '',
+          email: cliente.email ?? '',
         }))
         setClientes(clientesMapeados)
       } catch (error) {
@@ -40,18 +43,23 @@ export default function ClientesPage() {
   const handleEditar = (id: number) => {
     const cliente = clientes.find(c => c.id === id) || null;
     setClienteEdit(cliente);
+    if (cliente) {
+      setFormData({ username: cliente.username ?? '', rut: cliente.rut ?? '', email: cliente.email ?? '' });
+    }
     setFormMode('editar');
     setShowFormModal(true);
   }
   // Modal de formulario (crear/editar)
   const handleOpenCrear = () => {
     setClienteEdit(null);
+    // Inicializar formulario vacío al crear
+    setFormData({ username: '', rut: '', email: '' });
     setFormMode('crear');
     setShowFormModal(true);
   };
 
   // Formulario de prueba
-  const [formData, setFormData] = useState({ razonSocial: '', rut: '' });
+  const [formData, setFormData] = useState({ username: '', rut: '', email: '' });
 
   // Actualizar datos del formulario
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,33 +72,28 @@ export default function ClientesPage() {
       ...clientes,
       {
         id: Math.max(0, ...clientes.map(c => c.id)) + 1,
-        razonSocial: formData.razonSocial,
+        username: formData.username,
         rut: formData.rut,
+        email: formData.email,
       },
     ]);
     setShowFormModal(false);
-    setFormData({ razonSocial: '', rut: '' });
+    setFormData({ username: '', rut: '', email: '' });
   };
 
   // Editar cliente (solo frontend, no envía al backend)
   const handleEditarCliente = async () => {
     setClientes(clientes.map(c =>
-      c.id === clienteEdit?.id ? { ...c, razonSocial: formData.razonSocial, rut: formData.rut } : c
+      c.id === clienteEdit?.id
+        ? { ...c, username: formData.username, rut: formData.rut, email: formData.email }
+        : c
     ));
     setShowFormModal(false);
     setClienteEdit(null);
-    setFormData({ razonSocial: '', rut: '' });
+    setFormData({ username: '', rut: '', email: '' });
   };
 
-  // Abrir modal de edición y cargar datos
-  useEffect(() => {
-    if (showFormModal && formMode === 'editar' && clienteEdit) {
-      setFormData({ razonSocial: clienteEdit.razonSocial, rut: clienteEdit.rut });
-    }
-    if (showFormModal && formMode === 'crear') {
-      setFormData({ razonSocial: '', rut: '' });
-    }
-  }, [showFormModal, formMode, clienteEdit]);
+  // El formulario se inicializa en los handlers (handleEditar / handleOpenCrear)
 
 
   const handleEliminar = (id: number) => {
@@ -120,8 +123,9 @@ export default function ClientesPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const clientesFiltrados = clientes.filter(cliente =>
-    cliente.razonSocial.toLowerCase().includes(busqueda.toLowerCase()) ||
-    cliente.rut.toLowerCase().includes(busqueda.toLowerCase())
+    cliente.username.toLowerCase().includes(busqueda.toLowerCase()) ||
+    cliente.rut.toLowerCase().includes(busqueda.toLowerCase()) ||
+    cliente.email.toLowerCase().includes(busqueda.toLowerCase())
   )
   const totalPages = Math.ceil(clientesFiltrados.length / pageSize) || 1
   const paginatedClientes = clientesFiltrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -144,37 +148,24 @@ export default function ClientesPage() {
         </div>
 
         {/* Modal Crear/Editar Cliente */}
-        <Modal
-          open={showFormModal}
-          onClose={() => { setShowFormModal(false); setClienteEdit(null); }}
-          type="formulario"
-          title={formMode === 'crear' ? 'Crear Cliente' : 'Editar Cliente'}
-          formContent={
-            <form className="flex flex-col content-center items-center gap-4">
-              <label className="text-(--color-dark-gray) font-medium flex flex-col content-center items-center">Razón Social
-                <input
-                  type="text"
-                  name="razonSocial"
-                  value={formData.razonSocial}
-                  onChange={handleFormChange}
-                  className="mt-1 md:w-90 px-3 py-2 rounded border border-(--color-primary) focus:outline-none focus:border-(--color-primary)"
-                  required
-                />
-              </label>
-              <label className="text-(--color-dark-gray) flex flex-col content-center items-center font-medium">RUT
-                <input
-                  type="text"
-                  name="rut"
-                  value={formData.rut}
-                  onChange={handleFormChange}
-                  className="mt-1 md:w-90 px-3 py-2 rounded border border-(--color-primary) focus:outline-none focus:border-(--color-primary)"
-                  required
-                />
-              </label>
-            </form>
-          }
-          onCreate={formMode === 'crear' ? handleCrearCliente : handleEditarCliente}
-        />
+        {formMode === 'crear' && (
+          <ModalCreateClient
+            open={showFormModal}
+            onClose={() => { setShowFormModal(false); setClienteEdit(null); }}
+            onCreate={handleCrearCliente}
+            formData={formData}
+            onFormChange={handleFormChange}
+          />
+        )}
+        {formMode === 'editar' && (
+          <ModalEditClient
+            open={showFormModal}
+            onClose={() => { setShowFormModal(false); setClienteEdit(null); }}
+            onEdit={handleEditarCliente}
+            formData={formData}
+            onFormChange={handleFormChange}
+          />
+        )}
 
         {/* Barra de búsqueda */}
         <SearchBar
@@ -202,21 +193,22 @@ export default function ClientesPage() {
               Cargando clientes...
             </div>
           ) : (
-            <>
-              <ClientesTable
-                clientes={paginatedClientes}
-                onEditar={handleEditar}
-                onEliminar={handleEliminar}
-                onVerArchivos={handleVerArchivos}
-              />
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </>
+            <ClientesTable
+              clientes={paginatedClientes}
+              onEditar={handleEditar}
+              onEliminar={handleEliminar}
+              onVerArchivos={handleVerArchivos}
+            />
           )}
         </div>
+        {/* Pagination debajo de la tabla */}
+        {!loading && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </div>
   )

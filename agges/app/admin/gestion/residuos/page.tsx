@@ -1,33 +1,83 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import dynamic from 'next/dynamic'
+import { useState, useMemo, useEffect } from 'react'
+import { calcularPorcentajeMateriales, generarRegistrosTablaGestion } from '@/utils/residuosCalculos'
 import {
-    FaRecycle,
-    FaLeaf,
-    FaTint,
-    FaGlobeAmericas,
     FaFileExport
 } from 'react-icons/fa'
 import mockResiduosData from '../../../../data/mockResiduosData.json'
-import clientesData from '../../../../data/clientes.json'
 import conversionMadera from '../../../../data/conversionMadera.json'
 import Image from 'next/image'
 import { FaTree } from "react-icons/fa";
 import Conversion from './components/Conversion';
+import Graficos from './components/Graficos';
+import TableGestion from './components/TableGestion';
+import HuellaStats from './components/HuellaStats';
 
-const Chart = dynamic(() => import('../../../../components/Chart'), { ssr: false })
+import { useClientes } from '@/hooks/useClientes';
+import { useMateriales } from '@/hooks/useMateriales';
+import { useOrdenes } from '@/hooks/useOrdenes';
+import type { ClienteSimple } from '@/api/models';
+import type { Material } from '@/api/models';
+import type { ListadoOrdenesCliente, ListadoServiciosOrdenesCliente } from '@/api/ordenes/models';
+
 
 export default function GestionResiduosPage() {
+    // Obtener datos de clientes y materiales con hooks
+    const { getClientes } = useClientes();
+    const { listMateriales } = useMateriales();
+    const { listOrdenesByUsuario, loading: loadingOrdenes } = useOrdenes();
+    const [totalPeso , setTotalPeso] = useState<number>(0);
+
+    // Estado para clientes
+    const [clientes, setClientes] = useState<ClienteSimple[]>([]);
+    useEffect(() => {
+        getClientes().then(setClientes).catch(() => setClientes([]));
+    }, [getClientes]);
+
+    // Estado para materiales
+    const [materiales, setMateriales] = useState<Material[]>([]);
+    useEffect(() => {
+        listMateriales().then(setMateriales).catch(() => setMateriales([]));
+    }, [listMateriales]);
+    
+
     // Estado para conversión
-    const [conversion, setConversion] = useState('papel');
+    const [conversion, setConversion] = useState<string>('papel');
+    // Buscar la fórmula de conversión para el material seleccionado
     const conversionData = conversionMadera.find(c => c.objeto === conversion);
 
 
     // Estado para empresa seleccionada
     const [empresaId, setEmpresaId] = useState<string>('');
-    const clientes = clientesData as { id: number; name: string; logo: string }[];
     const empresaSeleccionada = useMemo(() => clientes.find(c => String(c.id) === empresaId), [empresaId, clientes]);
+
+    // Estado para órdenes del cliente seleccionado
+    const [ordenesCliente, setOrdenesCliente] = useState<ListadoOrdenesCliente[]>([]);
+
+    useEffect(() => {
+        if (empresaId) {
+            listOrdenesByUsuario(Number(empresaId)).then(data => {
+                setOrdenesCliente(data.ordenes || []);
+                setTotalPeso(data.suma_total_peso || 0);
+            });
+        }
+    }, [empresaId, listOrdenesByUsuario]);
+
+    // Aplicar conversión a las órdenes del cliente
+    // Aplica la conversión a cada servicio de cada orden
+    const ordenesConvertidas = useMemo(() => {
+        if (!conversionData || !ordenesCliente.length) return [];
+        const match = conversionData.formula.match(/\*\s*([\d.]+)/);
+        const factor = match ? Number(match[1]) : 1;
+        return ordenesCliente.map(orden => ({
+            ...orden,
+            servicios: orden.servicios.map((servicio: ListadoServiciosOrdenesCliente) => ({
+                ...servicio,
+                conversion: servicio.peso ? servicio.peso * factor : null
+            }))
+        }));
+    }, [ordenesCliente, conversionData]);
 
     const { stats, registros } = mockResiduosData
 
@@ -51,25 +101,11 @@ export default function GestionResiduosPage() {
     }, [registros])
 
 
-    // Configuración Chart: Distribución por Material
-    const pieData = useMemo(() => ({
-        labels: registros.map(r => r.material),
-        datasets: [{
-            data: materialTotals,
-            backgroundColor: [
-                '#8c52ff', // Cartón
-                '#ff914d', // Papel
-                '#ffde59', // Plástico
-                '#7ed957', // Metal
-                '#38b6ff', // Vidrio
-                '#ff5757', // Orgánico
-                '#8c8c8c', // Escombro
-                '#004aad'  // Otros
-            ],
-            borderWidth: 0,
-            hoverOffset: 4
-        }]
-    }), [registros, materialTotals])
+
+    // Función para calcular el porcentaje de aparición de cada material en las órdenes y servicios del cliente
+    const listadoPorcentajeMateriales = useMemo(() => calcularPorcentajeMateriales(ordenesCliente, materiales), [ordenesCliente, materiales]);
+
+    const registrosTablaGestion = useMemo(() => generarRegistrosTablaGestion(listadoPorcentajeMateriales, treatmentKeys as string[]), [listadoPorcentajeMateriales, treatmentKeys]);
 
     const pieOptions = {
         responsive: true,
@@ -77,11 +113,43 @@ export default function GestionResiduosPage() {
         plugins: {
             legend: {
                 position: 'right' as const,
-                labels: { boxWidth: 12, font: { size: 11 }, usePointStyle: true }
+                labels: {
+                    boxWidth: 12,
+                    font: { size: 11 },
+                    usePointStyle: true,
+                    // Mostrar porcentaje en la leyenda
+                    generateLabels: (chart: any) => {
+                        const data = chart.data;
+                        if (!data.labels || !data.datasets.length) return [];
+                        const dataset = data.datasets[0];
+                        const total = dataset.data.reduce((a: number, b: number) => a + b, 0);
+                        return data.labels.map((label: string, i: number) => {
+                            const value = dataset.data[i];
+                            const percent = total ? ((value / total) * 100).toFixed(1) : 0;
+                            return {
+                                text: `${label} (${percent}%)`,
+                                fillStyle: dataset.backgroundColor[i],
+                                strokeStyle: dataset.backgroundColor[i],
+                                index: i
+                            };
+                        });
+                    }
+                }
             },
             title: {
                 display: true,
-                text: 'Total Kilos por Material'
+                text: '% Órdenes por Material'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context: any) {
+                        const label = context.label || '';
+                        const value = context.parsed;
+                        const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+                        const percent = total ? ((value / total) * 100).toFixed(1) : 0;
+                        return `${label}: ${value}%`;
+                    }
+                }
             }
         }
     }
@@ -97,6 +165,40 @@ export default function GestionResiduosPage() {
         '#8c8c8c', // Escombro
         '#004aad'  // Otros
     ];
+
+    // --- FUNCIONES DE CÁLCULO DE HUELLAS ---
+    // Puedes ajustar los factores según la lógica real de negocio
+    function calcularHuellaCarbono(totalPesoKg: number) {
+        // Ejemplo: 1 kg = 1.8 kg CO2 evitado
+        const valor = (totalPesoKg * 1.8).toFixed(1);
+        // Ejemplo: cada 18 kg CO2 = 1 árbol salvado
+        const arboles = Math.round((totalPesoKg * 1.8) / 18);
+        return {
+            valor,
+            unidad: 'kg CO₂',
+            arboles
+        };
+    }
+
+    function calcularHuellaEcologica(totalPesoKg: number) {
+        // Ejemplo: 1 kg = 0.05 m² recuperados
+        const valor = (totalPesoKg * 0.05).toFixed(1);
+        return {
+            valor,
+            unidad: 'm²',
+            superficie: Math.round(totalPesoKg * 0.05)
+        };
+    }
+
+    function calcularHuellaHidrica(totalPesoKg: number) {
+        // Ejemplo: 1 kg = 2 litros de agua ahorrados
+        const valor = (totalPesoKg * 2).toFixed(0);
+        return {
+            valor,
+            unidad: 'L',
+            agua: Number(valor)
+        };
+    }
 
     const stackedBarData = useMemo(() => ({
         labels: treatmentLabels,
@@ -138,12 +240,12 @@ export default function GestionResiduosPage() {
         <div className="min-h-screen bg-[#f8f9fa] p-4 sm:p-8">
             <div className="max-w-7xl mx-auto">
                 {/* Banner superior con logo de empresa seleccionada */}
-                <div className='w-full h-20 bg-amber-50 shadow-md rounded-lg mb-6 overflow-hidden'>
+                {/*<div className='w-full h-20 bg-amber-50 shadow-md rounded-lg mb-6 overflow-hidden'>
                     <div className='w-full h-full relative flex items-center justify-center'>
                         {empresaSeleccionada && empresaSeleccionada.logo ? (
                             <Image
                                 src={empresaSeleccionada.logo}
-                                alt={empresaSeleccionada.name}
+                                alt={empresaSeleccionada.username}
                                 fill
                                 className="object-contain object-center"
                                 style={{ background: 'white' }}
@@ -157,7 +259,7 @@ export default function GestionResiduosPage() {
                             />
                         )}
                     </div>
-                </div>
+                </div>*/}
                 {/* Header */}
                 <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -180,7 +282,7 @@ export default function GestionResiduosPage() {
                         >
                             <option value="">Seleccionar</option>
                             {clientes.map(cliente => (
-                                <option key={cliente.id} value={cliente.id}>{cliente.name}</option>
+                                <option key={cliente.id} value={cliente.id}>{cliente.username}</option>
                             ))}
                         </select>
                     </div>
@@ -192,10 +294,6 @@ export default function GestionResiduosPage() {
                             <option value="Centro">Centro</option>
                             <option value="Sur">Sur</option>
                         </select>
-                    </div>
-                    <div className="flex flex-col gap-2 w-full md:w-auto">
-                        <label className="text-xs font-semibold text-gray-500">RUT Administrador</label>
-                        <input type="text" className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="Ej: 12.345.678-9" />
                     </div>
                     <div className="flex flex-col gap-2 w-full md:w-auto">
                         <label className="text-xs font-semibold text-gray-500">Año</label>
@@ -216,123 +314,33 @@ export default function GestionResiduosPage() {
                         </select>
                     </div>
                     <div className="flex flex-col gap-2 w-full md:w-auto">
-                        <label className="text-xs font-semibold text-gray-500">N° Servicio</label>
-                        <input type="number" className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="N° Servicio" min="1" />
+                        <label className="text-xs font-semibold text-gray-500">N° Orden</label>
+                        <input type="number" className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="N° Orden" min="1" />
                     </div>
                 </div>
 
 
                 {/* Stats Cards (Huellas) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-xs uppercase font-bold text-gray-400 mb-1 tracking-wider">Impacto Ambiental</p>
-                            <h3 className="text-2xl font-extrabold text-gray-800">Huella de Carbono</h3>
-                            <p className="text-sm text-green-500 font-semibold mt-1">{stats.huellaCarbono.valor} {stats.huellaCarbono.unidad} <span className="text-xs text-gray-400">({stats.huellaCarbono.cambio})</span></p>
-                            <span className="inline-flex items-center gap-2 text-green-700 font-semibold bg-green-50 rounded-lg px-4 py-2 text-sm shadow-sm">
-                                <FaTree className="text-green-500" />
-                                Equivale a 120 árboles salvados
-                            </span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-xl">
-                            <FaLeaf />
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-xs uppercase font-bold text-gray-400 mb-1 tracking-wider">Sostenibilidad</p>
-                            <h3 className="text-2xl font-extrabold text-gray-800">Huella Ecológica</h3>
-                            <p className="text-sm text-blue-500 font-semibold mt-1">{stats.huellaEcologica.valor} {stats.huellaEcologica.unidad}</p>
-                            <span className="inline-flex items-center gap-2 text-blue-700 font-semibold bg-stone-500 rounded-lg px-4 py-2 text-sm shadow-sm mt-2">
-                                <FaGlobeAmericas className="text-blue-500" />
-                                <span className="text-stone-800">Superficie recuperada: 80 m²</span>
-                            </span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 text-xl">
-                            <FaGlobeAmericas />
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-xs uppercase font-bold text-gray-400 mb-1 tracking-wider">Recursos Hídricos</p>
-                            <h3 className="text-2xl font-extrabold text-gray-800">Huella Hídrica</h3>
-                            <p className="text-sm text-blue-500 font-semibold mt-1">{stats.huellaHidrica.valor} {stats.huellaHidrica.unidad}</p>
-                            <span className="inline-flex items-center gap-2 text-blue-700 font-semibold bg-blue-50 rounded-lg px-4 py-2 text-sm shadow-sm mt-2">
-                                <FaTint className="text-blue-500" />
-                                Agua ahorrada: 1,200 L
-                            </span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 text-xl">
-                            <FaTint />
-                        </div>
-                    </div>
-                </div>
+                <HuellaStats
+                  totalPeso={totalPeso}
+                  calcularHuellaCarbono={calcularHuellaCarbono}
+                  calcularHuellaEcologica={calcularHuellaEcologica}
+                  calcularHuellaHidrica={calcularHuellaHidrica}
+                />
 
                 {/* Conversion selector */}
                 <Conversion />
 
-                {/* Main Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                    {/* Distribución por Material (Pie) */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:col-span-1">
-                        <h3 className="text-lg font-bold text-gray-800 mb-6">Distribución Total (Kg)</h3>
-                        <div className="h-[280px] relative">
-                            <Chart type="pie" data={pieData} options={pieOptions} />
-                        </div>
-                    </div>
+                {/* Main Charts Section (modularizado) */}
+                <Graficos
+                    listadoPorcentajeMateriales={listadoPorcentajeMateriales}
+                    pieOptions={pieOptions}
+                    stackedBarData={stackedBarData}
+                    stackedBarOptions={stackedBarOptions}
+                />
 
-                    {/* Stacked Bar Chart por Tratamiento y Material */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:col-span-2">
-                        <h3 className="text-lg font-bold text-gray-800 mb-6">Materiales por Tipo de Tratamiento</h3>
-                        <div className="h-[280px]">
-                            <Chart type="bar" data={stackedBarData} options={stackedBarOptions} />
-                        </div>
-                    </div>
-
-                    <div></div>
-                </div>
-
-                {/* Table Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800">Matriz de Tratamiento de Materiales</h3>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-gray-50 border-b border-gray-200">
-                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Material</th>
-                                    {treatmentLabels.map(head => (
-                                        <th key={head} className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                            {head}
-                                        </th>
-                                    ))}
-                                    <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {registros.map((row, idx) => {
-                                    const rowTotal = treatmentKeys.reduce((acc, key) => acc + row[key], 0)
-                                    return (
-                                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 font-semibold text-gray-700 text-sm whitespace-nowrap">{row.material}</td>
-                                            {treatmentKeys.map((key) => (
-                                                <td key={key} className="px-4 py-4 text-center text-sm text-gray-600">
-                                                    {row[key] > 0 ? row[key] : <span className="text-gray-300">-</span>}
-                                                </td>
-                                            ))}
-                                            <td className="px-4 py-4 text-center bg-gray-50 font-bold text-gray-800 text-sm">
-                                                {rowTotal}
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                {/* Table Section (modularizado) */}
+                <TableGestion registros={registrosTablaGestion} treatmentKeys={treatmentKeys} treatmentLabels={treatmentLabels} />
                 {/* Equivalente en árboles */}
                 <div className="flex justify-end mt-6">
 
