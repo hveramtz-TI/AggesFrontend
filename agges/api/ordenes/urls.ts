@@ -13,5 +13,7 @@ export const ORDENES_URLS = {
   // OrdenServ (servicios asociados a una orden)
   ORDEN_SERV_LIST: '/api/ordenserv/',
   ORDEN_SERV_DETAIL: (id: number) => `/api/ordenserv/${id}/`,
-  ORDEN_SERV_BY_ORDEN: (ordenId: number) => `/api/ordenes/${ordenId}/servicios/`,
+  ORDEN_SERV_CREATE: '/api/ordenserv/',
+  ORDEN_SERV_UPDATE: (id: number) => `/api/ordenserv/${id}/`,
+  ORDEN_SERV_DELETE: (id: number) => `/api/ordenserv/${id}/`,
 } as const;

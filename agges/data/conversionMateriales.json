@@ -1,0 +1,92 @@
+[
+    {
+        "id": 10,
+        "nombre": "Metal",
+        "conversiones": [
+            { "destino": "Lata", "formula": "kg * 0.8" },
+            { "destino": "Chatarra", "formula": "kg * 1" },
+            { "destino": "Cable", "formula": "kg * 0.3" }
+        ]
+    },
+    {
+        "id": 11,
+        "nombre": "Carton",
+        "conversiones": [
+            { "destino": "Caja", "formula": "kg * 0.5" },
+            { "destino": "Papel", "formula": "kg * 0.7" },
+            { "destino": "Tubos", "formula": "kg * 0.2" }
+        ]
+    },
+    {
+        "id": 12,
+        "nombre": "Plastico",
+        "conversiones": [
+            { "destino": "Botella", "formula": "kg * 0.9" },
+            { "destino": "Pellets", "formula": "kg * 0.8" },
+            { "destino": "Envase", "formula": "kg * 0.5" }
+        ]
+    },
+    {
+        "id": 13,
+        "nombre": "Madera",
+        "conversiones": [
+            { "destino": "Papel", "formula": "kg * 10" },
+            { "destino": "Palet", "formula": "kg * 0.006" },
+            { "destino": "Cuaderno", "formula": "kg * 0.2" }
+        ]
+    },
+    {
+        "id": 14,
+        "nombre": "Compuesto",
+        "conversiones": [
+            { "destino": "Mixto", "formula": "kg * 1" },
+            { "destino": "Panel", "formula": "kg * 0.4" },
+            { "destino": "Bloque", "formula": "kg * 0.3" }
+        ]
+    },
+    {
+        "id": 15,
+        "nombre": "Papel",
+        "conversiones": [
+            { "destino": "Cuaderno", "formula": "kg * 0.2" },
+            { "destino": "Caja", "formula": "kg * 0.05" },
+            { "destino": "Cartón", "formula": "kg * 0.6" }
+        ]
+    },
+    {
+        "id": 16,
+        "nombre": "Vidrio",
+        "conversiones": [
+            { "destino": "Botella", "formula": "kg * 0.95" },
+            { "destino": "Vaso", "formula": "kg * 0.5" },
+            { "destino": "Envase", "formula": "kg * 0.7" }
+        ]
+    },
+    {
+        "id": 17,
+        "nombre": "Escombro",
+        "conversiones": [
+            { "destino": "Mixto", "formula": "kg * 1" },
+            { "destino": "Bloque", "formula": "kg * 0.4" },
+            { "destino": "Grava", "formula": "kg * 0.6" }
+        ]
+    },
+    {
+        "id": 18,
+        "nombre": "Lata",
+        "conversiones": [
+            { "destino": "Chatarra", "formula": "kg * 1" },
+            { "destino": "Metal", "formula": "kg * 0.8" },
+            { "destino": "Cable", "formula": "kg * 0.2" }
+        ]
+    },
+    {
+        "id": 19,
+        "nombre": "Mixto",
+        "conversiones": [
+            { "destino": "Compuesto", "formula": "kg * 1" },
+            { "destino": "Panel", "formula": "kg * 0.5" },
+            { "destino": "Bloque", "formula": "kg * 0.3" }
+        ]
+    }
+]

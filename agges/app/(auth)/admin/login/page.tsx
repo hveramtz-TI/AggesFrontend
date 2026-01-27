@@ -27,8 +27,8 @@ export default function AdminLoginPage() {
       const errors: Partial<Record<'rut' | 'password', string>> = {}
       if (!values.rut) {
         errors.rut = 'El RUT es requerido'
-      } else if (!/^\d+$/.test(values.rut)) {
-        errors.rut = 'Solo se permiten números'
+      } else if (!/^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/.test(values.rut)) {
+        errors.rut = 'El RUT no es válido. Debe tener el formato 12.345.678-9'
       }
       if (!values.password) {
         errors.password = 'La contraseña es requerida'

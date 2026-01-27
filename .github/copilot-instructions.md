@@ -1,3 +1,7 @@
+## Iconografía
+- Para todos los íconos en la interfaz, utiliza la librería `react-icons`.
+- Importa solo los íconos necesarios desde el paquete correspondiente (ejemplo: `import { FaHome } from 'react-icons/fa'`).
+- Mantén la consistencia visual usando íconos de la misma familia cuando sea posible.
 
 # Copilot Instructions for AggesFrontend
 
@@ -47,6 +51,21 @@
   1. Crea carpeta en `api/productos/` con `index.ts`, `models.ts`, `urls.ts`.
   2. Agrega vistas en `app/admin/productos/` y/o `app/client/productos/`.
   3. Crea hooks en `hooks/useProductos.ts` si es necesario.
+
+
+## API
+- Toda la lógica de acceso a datos y modelos de dominio se encuentra en `agges/api/`.
+- Cada dominio (usuarios, documentos, materiales, etc.) tiene su propio subdirectorio con `index.ts`, `models.ts` y `urls.ts`.
+- Usa `client.ts` para centralizar las llamadas HTTP y manejo de errores.
+- Los modelos e interfaces de datos se definen en los archivos `models.ts` de cada dominio.
+- Mantén la coherencia en los nombres y estructura de los endpoints y modelos.
+
+## Hooks
+- Los hooks personalizados están en `agges/hooks/` y siguen el patrón `useX.ts`.
+- Cada hook encapsula lógica de negocio o acceso a datos de un dominio específico.
+- Ejemplo: `useClientes.ts` para clientes, `useMateriales.ts` para materiales.
+- Los hooks deben ser reutilizables y desacoplados de la UI.
+- Usa hooks para manejar estados, peticiones, formularios y lógica compartida.
 
 ## Archivos Clave
 - `agges/app/` — Vistas y rutas principales.

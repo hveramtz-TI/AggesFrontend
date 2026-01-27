@@ -1,7 +1,11 @@
 /**
  * URLs de los endpoints del backend
  * Centraliza todas las rutas de la API
+ * Actualizado según backend/config/urls.py
  */
+
+// Base URL para los endpoints del backend
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 // ============================================
 // AUTENTICACIÓN
@@ -9,13 +13,11 @@
 export const AUTH_URLS = {
   LOGIN: '/api/auth/login/',
   LOGOUT: '/api/auth/logout/',
-  REFRESH_TOKEN: '/api/token/refresh/',
-  VERIFY_TOKEN: '/api/token/verify/',
-  REGISTER: '/api/auth/register/',
-  PASSWORD_RESET: '/api/auth/password/reset/',
-  PASSWORD_RESET_CONFIRM: '/api/auth/password/reset/confirm/',
-  CHANGE_PASSWORD: '/api/auth/password/change/',
-  PROFILE: '/api/auth/profile/',
+  REGISTER: '/api/auth/registro/',
+  TOKEN_OBTAIN: '/api/token/',
+  TOKEN_REFRESH: '/api/token/refresh/',
+  PASSWORD_RESET: '/api/password_reset/',
+  ADMIN_CHANGE_PASSWORD: '/api/admin/cambiar-clave/',
 } as const
 
 // ============================================
@@ -24,53 +26,17 @@ export const AUTH_URLS = {
 export const CLIENTES_URLS = {
   // GET - Lista de clientes (usuarios no-admin)
   LIST: '/api/getclients/',
-  DETAIL: (id: number) => `/api/clientes/${id}/`,
-  CREATE: '/api/clientes/',
-  UPDATE: (id: number) => `/api/clientes/${id}/`,
-  DELETE: (id: number) => `/api/clientes/${id}/`,
-  TOGGLE_ACTIVE: (id: number) => `/api/clientes/${id}/toggle-active/`,
-  SEARCH: '/api/clientes/search/',
-  EXPORT: '/api/clientes/export/',
 } as const
 
 // ============================================
-// ARCHIVOS/DOCUMENTOS
+// DIVISIÓN
 // ============================================
 
-// Movido a api/apps/documentos/urls.ts
 
 // ============================================
-// COTIZACIONES
+// DOCUMENTACIÓN API
 // ============================================
-export const COTIZACIONES_URLS = {
-  LIST: '/api/cotizaciones/',
-  DETAIL: (id: number) => `/api/cotizaciones/${id}/`,
-  CREATE: '/api/cotizaciones/',
-  UPDATE: (id: number) => `/api/cotizaciones/${id}/`,
-  DELETE: (id: number) => `/api/cotizaciones/${id}/`,
-  MATERIALES: '/api/materiales/',
-  SUBMATERIALES: (materialId: number) => `/api/materiales/${materialId}/submateriales/`,
-  REGIONES: '/api/regiones/',
-  COMUNAS: (regionId: number) => `/api/regiones/${regionId}/comunas/`,
-  CALCULAR: '/api/cotizaciones/calcular/',
-  EXPORT_PDF: (id: number) => `/api/cotizaciones/${id}/export-pdf/`,
-} as const
-
-// ============================================
-// PROYECTOS
-// ============================================
-export const PROYECTOS_URLS = {
-  LIST: '/api/proyectos/',
-  DETAIL: (id: number) => `/api/proyectos/${id}/`,
-  CREATE: '/api/proyectos/',
-  UPDATE: (id: number) => `/api/proyectos/${id}/`,
-  DELETE: (id: number) => `/api/proyectos/${id}/`,
-} as const
-
-// ============================================
-// DASHBOARD / ESTADÍSTICAS
-// ============================================
-export const DASHBOARD_URLS = {
-  CLIENT_STATS: '/api/dashboard/client/',
-  ADMIN_STATS: '/api/dashboard/admin/',
+export const API_DOCS_URLS = {
+  SCHEMA: '/api/schema/',
+  SWAGGER: '/api/docs/',
 } as const

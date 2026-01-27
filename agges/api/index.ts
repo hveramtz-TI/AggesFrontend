@@ -13,3 +13,4 @@ export * from './documentos';
 export * from './ordenes';
 export * from './modorecoleccion';
 export * from './tipotratamiento';
+export * from './division';

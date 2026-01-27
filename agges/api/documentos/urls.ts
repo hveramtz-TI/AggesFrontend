@@ -10,6 +10,6 @@ export const ARCHIVOS_URLS = {
   EDIT: (id: number) => `/api/documentos/${id}/editar/`,
   DELETE: (id: number) => `/api/documentos/${id}/eliminar/`,
   SHARED: '/api/documentos/compartidos/',
-  SHARE: (id: number) => `/api/documentos/${id}/share/`,
-  UNSHARE: (id: number) => `/api/documentos/${id}/unshare/`,
+  SHARE: (id: number) => `/api/documentos/${id}/compartir/`,
+  UNSHARE: (id: number) => `/api/documentos/${id}/dejar_de_compartir/`,
 } as const

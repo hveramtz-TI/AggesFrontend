@@ -96,6 +96,14 @@ const SidebarMobile = ({ isActive, logout, open, setOpen, userType }: SidebarMob
         }));
     };
 
+    // Forzar que el sidebar móvil nunca use modo dark
+    React.useEffect(() => {
+        const sidebarMobile = document.getElementById('sidebar-mobile-fixed');
+        if (sidebarMobile) {
+            sidebarMobile.classList.remove('dark');
+        }
+    }, [open]);
+
     return (
         <>
             {/* Botón hamburguesa - Solo visible cuando está cerrado */}
@@ -127,10 +135,11 @@ const SidebarMobile = ({ isActive, logout, open, setOpen, userType }: SidebarMob
 
                     {/* Menú lateral móvil */}
                     <aside
-                        className="md:hidden fixed top-0 left-0 h-full w-[280px] bg-[var(--color-dark-gray)] z-50 shadow-2xl flex flex-col"
+                        id="sidebar-mobile-fixed"
+                        className="sidebar-fixed md:hidden fixed top-0 left-0 h-full w-[280px] bg-[var(--color-dark-gray)] z-50 shadow-2xl flex flex-col"
                     >
                         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                            <h2 className="text-xl font-bold text-[var(--color-primary)] m-0">AGGES</h2>
+                            <h2 className="text-xl font-bold text-[#83CA4A] m-0">AGGES</h2>
                             <button
                                 onClick={() => {
                                     console.log('Clicked Close X Button');
@@ -151,7 +160,7 @@ const SidebarMobile = ({ isActive, logout, open, setOpen, userType }: SidebarMob
                                     <div key={section.section} className="flex flex-col gap-1">
                                         <button
                                             onClick={() => toggleSection(section.section)}
-                                            className="flex items-center justify-between p-3 text-gray-400 font-bold text-xs uppercase tracking-wider bg-transparent border-none cursor-pointer hover:text-white transition-colors"
+                                            className="flex items-center justify-between p-3 text-[#83CA4A] font-bold text-xs uppercase tracking-wider bg-transparent border-none cursor-pointer transition-colors"
                                         >
                                             {section.section}
                                             {isExpanded ? <FaChevronDown size={10} /> : <FaChevronRight size={10} />}
@@ -163,12 +172,12 @@ const SidebarMobile = ({ isActive, logout, open, setOpen, userType }: SidebarMob
                                                     key={item.path}
                                                     href={item.path}
                                                     className={`flex items-center gap-4 py-3 px-4 rounded-lg text-white no-underline text-sm font-medium transition-all duration-200 hover:bg-white/10 ${isActive(item.path)
-                                                        ? 'bg-[var(--color-primary)] text-white shadow-md'
-                                                        : 'text-gray-300'
+                                                        ? 'bg-[#83CA4A] text-white shadow-md'
+                                                        : 'text-white'
                                                         }`}
                                                     onClick={() => setOpen(false)}
                                                 >
-                                                    <span className={`${isActive(item.path) ? 'text-white' : 'text-gray-400'}`}>
+                                                    <span className="text-white">
                                                         {iconMap[item.icon]}
                                                     </span>
                                                     {item.name}

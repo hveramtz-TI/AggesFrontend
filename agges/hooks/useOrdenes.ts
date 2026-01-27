@@ -2,6 +2,8 @@
 import { useState, useCallback } from 'react';
 import api from '@/api/client';
 import { ORDENES_URLS } from '@/api/ordenes/urls';
+import { REPORTERIA_URLS } from '@/api/urls';
+import type { GestionResiduosClienteResponse } from '@/api/ordenes/models';
 
 type LoadingState = boolean;
 
@@ -58,10 +60,11 @@ export function useOrdenes() {
     }
   }, []);
 
-  const listOrdenesByUsuario = useCallback(async (usuarioId: number) => {
+  // Gestión de residuos por cliente (usando reportería)
+  const gestionResiduosCliente = useCallback(async (usuarioId: number): Promise<GestionResiduosClienteResponse> => {
     setLoading(true);
     try {
-      const { data } = await api.get(ORDENES_URLS.BY_USUARIO(usuarioId));
+      const { data } = await api.get<GestionResiduosClienteResponse>(REPORTERIA_URLS.GESTION_RESIDUOS_CLIENTE(usuarioId));
       return data;
     } finally {
       setLoading(false);
@@ -75,7 +78,7 @@ export function useOrdenes() {
     createOrden,
     updateOrden,
     deleteOrden,
-    listOrdenesByUsuario,
+    gestionResiduosCliente,
   };
 }
 

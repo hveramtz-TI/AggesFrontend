@@ -20,6 +20,7 @@ import {
     FaChevronRight
 } from 'react-icons/fa'
 import { FaCalendar } from 'react-icons/fa6';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 interface SidebarProps {
     isActive: (path: string) => boolean;
@@ -100,7 +101,7 @@ const Sidebar = ({ isActive, logout, userType }: SidebarProps) => {
     };
 
     return (
-        <aside className="shrink-0 w-[250px] bg-[var(--color-dark-gray)] text-white shadow-xl transition-transform duration-300 overflow-y-auto max-md:hidden flex flex-col">
+        <aside className="sidebar-fixed shrink-0 w-[250px] bg-[var(--color-dark-gray)] text-white shadow-xl transition-transform duration-300 overflow-y-auto max-md:hidden flex flex-col">
             <div className='flex items-center justify-center py-8'>
                 {/* Aquí podrías poner el Logo si lo tienes */}
                 <h2 className="text-2xl font-bold text-[var(--color-primary)] m-0">AGGES</h2>
@@ -150,21 +151,74 @@ const Sidebar = ({ isActive, logout, userType }: SidebarProps) => {
                     })}
                 </nav>
 
-                <div className="mt-auto w-full py-6">
-                    <button
-                        onClick={handleLogout}
-                        className={`w-full px-4 py-3 rounded-lg text-white border-none cursor-pointer font-bold transition-all duration-300 bg-red-600/80 hover:bg-red-600 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${loggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        disabled={loggingOut}
-                    >
-                        {loggingOut ? 'Saliendo...' : (
-                            <>
-                                <span>Cerrar Sesión</span>
-                            </>
-                        )}
-                    </button>
+                <div className="mt-auto w-full py-6 flex flex-col gap-2">
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleLogout}
+                            className={`flex-1 px-4 py-3 rounded-lg text-white border-none cursor-pointer font-bold transition-all duration-300 bg-red-600/80 hover:bg-red-600 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 ${loggingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={loggingOut}
+                        >
+                            {loggingOut ? 'Saliendo...' : (
+                                <>
+                                    <span>Cerrar Sesión</span>
+                                </>
+                            )}
+                        </button>
+                        <ThemeToggleButton />
+                    </div>
                 </div>
             </div>
         </aside>
+    );
+}
+
+// Botón para alternar modo claro/oscuro
+const ThemeToggleButton = () => {
+    const [isDark, setIsDark] = React.useState(false);
+
+    React.useEffect(() => {
+        // Detectar modo inicial
+        setIsDark(document.documentElement.classList.contains('dark'));
+    }, []);
+
+    const toggleTheme = () => {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            setIsDark(false);
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.classList.add('dark');
+            setIsDark(true);
+            localStorage.setItem('theme', 'dark');
+        }
+    };
+
+    React.useEffect(() => {
+        // Aplicar preferencia guardada
+        const saved = localStorage.getItem('theme');
+        if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+            setIsDark(true);
+        } else if (saved === 'light') {
+            document.documentElement.classList.remove('dark');
+            setIsDark(false);
+        }
+    }, []);
+
+    return (
+        <button
+            onClick={toggleTheme}
+            aria-label="Alternar modo claro/oscuro"
+            className={`px-3 py-3 rounded-lg flex items-center justify-center bg-gray-700 hover:bg-gray-600 transition-colors shadow-md`}
+            type="button"
+        >
+            {isDark ? (
+                <FaSun size={18} title="Modo claro" />
+            ) : (
+                <FaMoon size={18} title="Modo oscuro" />
+            )}
+        </button>
     );
 }
 

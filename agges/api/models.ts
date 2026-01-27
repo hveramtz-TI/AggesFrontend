@@ -12,17 +12,19 @@ export interface User {
   id: number
   email: string
   username: string
-  first_name?: string
-  last_name?: string
+  first_name?: string | null
+  last_name?: string | null
   is_staff?: boolean
   is_active: boolean
   date_joined: string
-  tipo_usuario?: number // 0: Usuario normal, 1: Admin
-  perfil?: { [key: string]: unknown } | null // Perfil del usuario (puede ser null)
+  rut?: string | null
+  // Campos adicionales que pueden venir del login
+  tipo_usuario?: number // 0: Usuario normal, 1: Admin (frontend only)
+  perfil?: { [key: string]: unknown } | null // Perfil del usuario (puede ser null, frontend only)
 }
 
 export interface LoginCredentials {
-  email: string
+  rut: string
   password: string
 }
 
@@ -38,13 +40,13 @@ export interface LoginResponse {
 }
 
 export interface RegisterData {
+  username: string
   email: string
   password: string
-  password_confirm: string
-  nombre: string
-  apellido: string
+  password2: string // backend usa password2
+  first_name: string
+  last_name: string
   rut?: string
-  telefono?: string
 }
 
 export interface PasswordResetRequest {
@@ -67,12 +69,11 @@ export interface PasswordChange {
 // CLIENTES
 // ============================================
 
-// Respuesta de GET /api/getclients/
+// Respuesta de GET /api/getclients/ (UsuarioClienteReducidoSerializer)
 export interface ClienteSimple {
   id: number
-  username: string
-  email: string
-  rut:string
+  username: string // source: username
+  rut: string // source: email (en el serializer reducido)
 }
 
 export interface Cliente {

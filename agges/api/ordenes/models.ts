@@ -2,53 +2,40 @@
 // ÓRDENES - MODELOS
 // ============================================
 
-export interface Division {
-  id: number;
-  nombre: string;
-}
-
 export interface Orden {
   id: number;
   numero: number;
-  fecha?: string; // DateField, puede ser null
+  fecha?: string | null; // DateField, puede ser null
   usuario: number; // FK a Usuario
-  division?: number; // FK a Division, opcional
+  division?: number | null; // FK a Division, opcional
+  orden_servicios?: OrdenServ[]; // Relación con OrdenServ (read_only en serializer)
 }
 
 export interface OrdenServ {
   id: number;
   orden: number; // FK a Orden
-  servicio: number; // FK a Servicio
-  material?: number; // FK a Material, opcional
-  submaterial?: number; // FK a Submaterial, opcional
-  elemento?: number; // FK a Elemento, opcional
-  modorecoleccion?: number; // FK a ModoRecoleccion, opcional
-  tipotratamiento?: number; // FK a TipoTratamiento, opcional
-  peso?: string; // Decimal, opcional
+  material?: number | null; // FK a Material, opcional
+  submaterial?: number | null; // FK a Submaterial, opcional
+  elemento?: number | null; // FK a Elemento, opcional
+  servicio: number; // FK a Servicio (required)
+  modorecoleccion?: number | null; // FK a ModoRecoleccion, opcional
+  tipotratamiento?: number | null; // FK a TipoTratamiento, opcional
+  peso?: string | null; // DecimalField(max_digits=12, decimal_places=3), opcional
 }
 
-export interface OrdenServ {
-  id: number;
-  servicio: number; // FK to Servicio
-  elemento?: number; // FK to Elemento, nullable
-  orden: number; // FK to Orden
-  peso_material?: number;
+// Respuesta de gestion-residuos-cliente
+export interface GestionResiduosClienteResponse {
+  ordenes: OrdenResiduos[];
 }
 
-export interface OrdenDoc {
-  id: number;
-  orden: number; // FK to Orden
-  usuario: number; // FK to Usuario
-  documento: number; // FK to Documento
+export interface OrdenResiduos {
+  numero: number;
+  division_id: number | null;
+  fecha: string | null; // ISO format
+  materiales: MaterialPeso[];
 }
 
-export interface ListadoOrdenesCliente
-{
-  numero_orden: string; // Número de la orden
-  servicios: ListadoServiciosOrdenesCliente[]; // Listado de servicios asociados a la orden
-}
-
-export interface ListadoServiciosOrdenesCliente {
-  id_material: number; // ID del material
-  peso: number; // Peso del material
+export interface MaterialPeso {
+  idmaterial: number;
+  peso: number;
 }

@@ -4,18 +4,18 @@
 
 export const SERVICIOS_URLS = {
   // Áreas de servicio
-  AREAS: '/api/areadeservicio/',
-  AREA_DETAIL: (id: number) => `/api/areadeservicio/${id}/`,
+  AREAS: '/api/area/',
+  AREA_DETAIL: (id: number) => `/api/area/${id}/`,
 
   // Categorías de servicio
-  CATEGORIAS: '/api/categoriadeservicio/',
-  CATEGORIA_DETAIL: (id: number) => `/api/categoriadeservicio/${id}/`,
+  CATEGORIAS: '/api/categoria/',
+  CATEGORIA_DETAIL: (id: number) => `/api/categoria/${id}/`,
 
   // Servicios disponibles
-  SERVICIOS_DISPONIBLES: '/api/serviciosdisponible/',
-  SERVICIO_DISPONIBLE_DETAIL: (id: number) => `/api/serviciosdisponible/${id}/`,
+  SERVICIOS_DISPONIBLES: '/api/servicios_disponibles/',
+  SERVICIO_DISPONIBLE_DETAIL: (id: number) => `/api/servicios_disponibles/${id}/`,
 
   // Servicio
-  SERVICIOS: '/api/servicios/',
-  SERVICIO_DETAIL: (id: number) => `/api/servicios/${id}/`,
+  SERVICIOS: '/api/servicio/',
+  SERVICIO_DETAIL: (id: number) => `/api/servicio/${id}/`,
 } as const

@@ -16,7 +16,9 @@ export const useAuth = () => {
         setLoading(true);
 
         try {
-            const { data } = await api.post<LoginResponse>(AUTH_URLS.LOGIN, credentials);
+            // Solo enviar rut y password
+            const payload = { rut: credentials.rut, password: credentials.password };
+            const { data } = await api.post<LoginResponse>(AUTH_URLS.LOGIN, payload);
 
             console.log('Respuesta del backend:', data);
 

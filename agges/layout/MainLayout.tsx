@@ -62,7 +62,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       {isMobile && (
         <SidebarMobile isActive={isActive} logout={logout} open={open} setOpen={setOpen} userType={userType} />
       )}
-      <main className="flex-1 max-md:p-4 bg-[var(--color-light-green)] overflow-y-auto">
+      <main className="flex-1 max-md:p-4 bg-[var(--background)] overflow-y-auto">
         {children}
       </main>
     </div>
