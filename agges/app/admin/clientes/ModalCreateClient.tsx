@@ -8,7 +8,6 @@ interface ModalCreateClientProps {
   formData: {
     username: string;
     rut: string;
-    email: string;
   };
   onFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -27,16 +26,6 @@ const ModalCreateClient: React.FC<ModalCreateClientProps> = ({ open, onClose, on
               type="text"
               name="username"
               value={formData.username}
-              onChange={onFormChange}
-              className="mt-1 md:w-90 px-3 py-2 rounded border border-(--color-primary) focus:outline-none focus:border-(--color-primary)"
-              required
-            />
-          </label>
-          <label className="text-(--color-dark-gray) flex flex-col content-center items-center font-medium">Email
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
               onChange={onFormChange}
               className="mt-1 md:w-90 px-3 py-2 rounded border border-(--color-primary) focus:outline-none focus:border-(--color-primary)"
               required

@@ -24,12 +24,11 @@ export default function ClientesPage() {
     const cargarClientes = async () => {
       try {
         const data = await getClientes()
-        // Mapear a ClienteSimple (id, username, rut, email)
-        const clientesMapeados: ClienteSimple[] = data.map((cliente: { id: number; username?: string; rut?: string; email?: string }) => ({
+        // Mapear a ClienteSimple (id, username, rut)
+        const clientesMapeados: ClienteSimple[] = data.map((cliente: { id: number; username?: string; rut?: string }) => ({
           id: cliente.id,
           username: cliente.username ?? '',
           rut: cliente.rut ?? '',
-          email: cliente.email ?? '',
         }))
         setClientes(clientesMapeados)
       } catch (error) {
@@ -44,7 +43,7 @@ export default function ClientesPage() {
     const cliente = clientes.find(c => c.id === id) || null;
     setClienteEdit(cliente);
     if (cliente) {
-      setFormData({ username: cliente.username ?? '', rut: cliente.rut ?? '', email: cliente.email ?? '' });
+      setFormData({ username: cliente.username ?? '', rut: cliente.rut ?? '' });
     }
     setFormMode('editar');
     setShowFormModal(true);
@@ -53,13 +52,13 @@ export default function ClientesPage() {
   const handleOpenCrear = () => {
     setClienteEdit(null);
     // Inicializar formulario vacío al crear
-    setFormData({ username: '', rut: '', email: '' });
+    setFormData({ username: '', rut: '' });
     setFormMode('crear');
     setShowFormModal(true);
   };
 
   // Formulario de prueba
-  const [formData, setFormData] = useState({ username: '', rut: '', email: '' });
+  const [formData, setFormData] = useState({ username: '', rut: '' });
 
   // Actualizar datos del formulario
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,23 +73,22 @@ export default function ClientesPage() {
         id: Math.max(0, ...clientes.map(c => c.id)) + 1,
         username: formData.username,
         rut: formData.rut,
-        email: formData.email,
       },
     ]);
     setShowFormModal(false);
-    setFormData({ username: '', rut: '', email: '' });
+    setFormData({ username: '', rut: '' });
   };
 
   // Editar cliente (solo frontend, no envía al backend)
   const handleEditarCliente = async () => {
     setClientes(clientes.map(c =>
       c.id === clienteEdit?.id
-        ? { ...c, username: formData.username, rut: formData.rut, email: formData.email }
+        ? { ...c, username: formData.username, rut: formData.rut }
         : c
     ));
     setShowFormModal(false);
     setClienteEdit(null);
-    setFormData({ username: '', rut: '', email: '' });
+    setFormData({ username: '', rut: '' });
   };
 
   // El formulario se inicializa en los handlers (handleEditar / handleOpenCrear)
@@ -124,8 +122,7 @@ export default function ClientesPage() {
   const pageSize = 10
   const clientesFiltrados = clientes.filter(cliente =>
     cliente.username.toLowerCase().includes(busqueda.toLowerCase()) ||
-    cliente.rut.toLowerCase().includes(busqueda.toLowerCase()) ||
-    cliente.email.toLowerCase().includes(busqueda.toLowerCase())
+    cliente.rut.toLowerCase().includes(busqueda.toLowerCase())
   )
   const totalPages = Math.ceil(clientesFiltrados.length / pageSize) || 1
   const paginatedClientes = clientesFiltrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
