@@ -38,7 +38,10 @@ const TableGestion = ({ registros, treatmentKeys, treatmentLabels }: Props) => {
           </thead>
           <tbody>
             {registros.map((row, idx) => {
-              const rowTotal = treatmentKeys.reduce((acc, key) => acc + (row[key] || 0), 0);
+              const rowTotal = treatmentKeys.reduce((acc, key) => {
+                const value = row[key];
+                return acc + (typeof value === 'number' ? value : 0);
+              }, 0);
               return (
                 <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-200"}>
                   <td className="px-6 py-3 font-semibold text-gray-800 text-sm whitespace-nowrap ">
