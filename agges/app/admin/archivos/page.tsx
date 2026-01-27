@@ -1,5 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
+// Type guard para asegurar solo objetos Archivo
+function isArchivo(obj: any): obj is Archivo {
+  return obj && typeof obj === 'object' &&
+    'archivo' in obj &&
+    'tipo_mime' in obj &&
+    'tamaño_bytes' in obj &&
+    'visibilidad' in obj &&
+    'fecha_carga' in obj;
+}
 import type { ClienteSimple, Archivo } from '@/api'
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload } from 'react-icons/fa'
 import { useArchivos, useClientes } from '@/hooks'
@@ -36,14 +45,16 @@ export default function ArchivosAdminPage() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const responseArchivos = await getArchivos()
-        setArchivos(responseArchivos.results || [])
+        const responseArchivos = await getArchivos();
+        // Filtrar solo objetos que tengan las propiedades de Archivo
+        const archivosSolo = (responseArchivos.results || []).filter(isArchivo) as Archivo[];
+        setArchivos(archivosSolo);
       } catch (error) {
-        console.error('Error al cargar datos:', error)
+        console.error('Error al cargar datos:', error);
       }
-    }
+    };
 
-    cargarDatos()
+    cargarDatos();
   }, [])
 
   const getFileIcon = (tipo: string) => {
@@ -98,7 +109,8 @@ export default function ArchivosAdminPage() {
         await deleteArchivo(archivo.id)
         // Recargar la lista después de eliminar y resetear página
         const responseArchivos = await getArchivos()
-        setArchivos(responseArchivos.results || [])
+        const archivosSolo = (responseArchivos.results || []).filter(isArchivo) as Archivo[];
+        setArchivos(archivosSolo);
         setCurrentPage(1)
         alert('Archivo eliminado exitosamente')
       } catch (error) {
@@ -111,9 +123,10 @@ export default function ArchivosAdminPage() {
   const handleSuccess = async () => {
     // Recargar la lista de archivos después de subir/editar uno y resetear página
     try {
-      const responseArchivos = await getArchivos()
-      setArchivos(responseArchivos.results || [])
-      setCurrentPage(1)
+      const responseArchivos = await getArchivos();
+      const archivosSolo = (responseArchivos.results || []).filter(isArchivo) as Archivo[];
+      setArchivos(archivosSolo);
+      setCurrentPage(1);
     } catch (error) {
       console.error('Error al recargar archivos:', error)
     }
