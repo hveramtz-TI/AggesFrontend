@@ -73,7 +73,7 @@ export interface PasswordChange {
 export interface ClienteSimple {
   id: number
   username: string // source: username
-  rut: string // source: email (en el serializer reducido)
+  rut: string
 }
 
 export interface Cliente {

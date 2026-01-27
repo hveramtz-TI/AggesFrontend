@@ -54,10 +54,11 @@ export default function ClientesTable({ clientes, onEditar, onEliminar, onVerArc
                 {/* Nombre: username */}
                 {cliente.username ?? '-'}
               </td>
-              <td className="px-4 py-4 text-[var(--color-dark-gray)]">
-                {/* Email */}
-                {cliente.email ?? '-'}
+              {/*<td className="px-4 py-4 text-[var(--color-dark-gray)]">
+                 Email 
+                {cliente. ?? '-'}
               </td>
+              */}
               <td className="px-4 py-4 text-[var(--color-dark-gray)]">
                 {/* Rut */}
                 {cliente.rut ?? '-'}
