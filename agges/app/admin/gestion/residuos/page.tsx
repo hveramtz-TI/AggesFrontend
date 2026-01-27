@@ -232,7 +232,7 @@ export default function GestionResiduosPage() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { display: true, position: 'top', labels: { font: { size: 11 } } },
+            legend: { display: true, position: 'top' as const, labels: { font: { size: 11 } } },
             title: {
                 display: true,
                 text: 'Volumen por Tipo de Tratamiento y Material'
