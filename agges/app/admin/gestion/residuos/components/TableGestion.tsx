@@ -52,7 +52,7 @@ const TableGestion = ({ registros, treatmentKeys, treatmentLabels }: Props) => {
                       key={key}
                       className="px-4 py-3 text-center text-sm text-gray-700 border border-gray-200"
                     >
-                      {row[key] && row[key] > 0 ? row[key] : <span className="text-gray-300">-</span>}
+                      {typeof row[key] === 'number' && row[key] > 0 ? row[key] : <span className="text-gray-300">-</span>}
                     </td>
                   ))}
                   <td className="px-4 py-3 text-center font-bold text-gray-900 text-sm border border-gray-200">
