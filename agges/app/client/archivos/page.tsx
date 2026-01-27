@@ -1,3 +1,12 @@
+// Type guard para asegurar solo objetos Archivo
+function isArchivo(obj: any): obj is Archivo {
+  return obj && typeof obj === 'object' &&
+    'archivo' in obj &&
+    'tipo_mime' in obj &&
+    'tamaño_bytes' in obj &&
+    'visibilidad' in obj &&
+    'fecha_carga' in obj;
+}
 'use client'
 import { useState, useEffect } from 'react'
 import { FaUpload } from 'react-icons/fa'
@@ -63,7 +72,7 @@ export default function ArchivosClientPage() {
         const archivosUnicos = Array.from(
           new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
         )
-        setArchivosDelCliente(archivosUnicos)
+        setArchivosDelCliente(archivosUnicos.filter(isArchivo))
       } catch (error) {
         console.error('Error al obtener archivos:', error)
       }
@@ -108,7 +117,7 @@ export default function ArchivosClientPage() {
       const archivosUnicos = Array.from(
         new Map(todosLosArchivos.map(archivo => [archivo.id, archivo])).values()
       )
-      setArchivosDelCliente(archivosUnicos)
+      setArchivosDelCliente(archivosUnicos.filter(isArchivo))
     } catch (error) {
       console.error('Error al recargar archivos:', error)
     }

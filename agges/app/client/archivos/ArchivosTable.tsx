@@ -50,7 +50,7 @@ export default function ArchivosTable({ archivos, getFileIcon, formatFecha, onEd
                   </div>
                 </td>
                 <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                  {formatFecha(archivo.fecha_subida || archivo.fecha_carga)}
+                  {formatFecha(archivo.fecha_carga)}
                 </td>
                 <td className="px-4 py-4">
                   <div className="flex flex-col gap-1">
