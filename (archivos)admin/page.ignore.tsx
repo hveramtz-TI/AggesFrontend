@@ -14,7 +14,7 @@ import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload 
 import { useArchivos, useClientes } from '@/hooks'
 import ArchivoFormModal from '@/components/ArchivoFormModal'
 
-import ArchivosTable from './ArchivosTable'
+import ArchivosTable from './ArchivosTable.ignore'
 import Pagination from '@/components/common/Pagination'
 import SearchBar from '@/components/common/SearchBar'
 
