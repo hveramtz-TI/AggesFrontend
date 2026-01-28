@@ -11,9 +11,6 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 // AUTENTICACIÓN
 // ============================================
 export const AUTH_URLS = {
-  LOGIN: '/api/auth/login/',
-  LOGOUT: '/api/auth/logout/',
-  REGISTER: '/api/auth/registro/',
   TOKEN_OBTAIN: '/api/token/',
   TOKEN_REFRESH: '/api/token/refresh/',
   PASSWORD_RESET: '/api/password_reset/',
@@ -23,10 +20,10 @@ export const AUTH_URLS = {
 // ============================================
 // CLIENTES
 // ============================================
-export const CLIENTES_URLS = {
-  // GET - Lista de clientes (usuarios no-admin)
-  LIST: '/api/getclients/',
-} as const
+// export const CLIENTES_URLS = {
+//   // GET - Lista de clientes (usuarios no-admin)
+//   LIST: '/api/getclients/',
+// } as const
 
 // ============================================
 // DIVISIÓN

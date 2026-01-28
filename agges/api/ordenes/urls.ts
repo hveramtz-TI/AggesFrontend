@@ -2,7 +2,7 @@
 // ÓRDENES - URLS
 // ============================================
 
-export const ORDENES_URLS = {
+{/*export const ORDENES_URLS = {
   // Órdenes
   LIST: '/api/ordenes/',
   DETAIL: (id: number) => `/api/ordenes/${id}/`,
@@ -17,3 +17,4 @@ export const ORDENES_URLS = {
   ORDEN_SERV_UPDATE: (id: number) => `/api/ordenserv/${id}/`,
   ORDEN_SERV_DELETE: (id: number) => `/api/ordenserv/${id}/`,
 } as const;
+*/}

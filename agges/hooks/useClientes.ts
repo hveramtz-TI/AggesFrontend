@@ -3,7 +3,7 @@ import * as React from 'react';
 import { AxiosError } from 'axios';
 import type { ClienteSimple } from '@/api';
 import { api } from '@/api/client';
-import { CLIENTES_URLS } from '@/api';
+import { USUARIOS_URLS } from '@/api/usuarios/urls';
 
 /**
  * Hook personalizado para gestión de clientes
@@ -26,7 +26,7 @@ export const useClientes = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get<ClienteSimple[]>(CLIENTES_URLS.LIST);
+      const { data } = await api.get<ClienteSimple[]>(USUARIOS_URLS.GET_CLIENTS);
       return data;
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;

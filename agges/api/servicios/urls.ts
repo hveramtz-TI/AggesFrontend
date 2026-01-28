@@ -2,7 +2,7 @@
 // SERVICIOS - URLS
 // ============================================
 
-export const SERVICIOS_URLS = {
+{/*export const SERVICIOS_URLS = {
   // Áreas de servicio
   AREAS: '/api/area/',
   AREA_DETAIL: (id: number) => `/api/area/${id}/`,
@@ -18,4 +18,4 @@ export const SERVICIOS_URLS = {
   // Servicio
   SERVICIOS: '/api/servicio/',
   SERVICIO_DETAIL: (id: number) => `/api/servicio/${id}/`,
-} as const
+} as const]*/}

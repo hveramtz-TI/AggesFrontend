@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { api } from '@/api/client';
 import { AUTH_URLS } from '@/api';
 import type { LoginCredentials, LoginResponse } from '@/api';
+import { USUARIOS_URLS } from '@/api';
 
 export const useAuth = () => {
     const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ export const useAuth = () => {
         try {
             // Solo enviar rut y password
             const payload = { rut: credentials.rut, password: credentials.password };
-            const { data } = await api.post<LoginResponse>(AUTH_URLS.LOGIN, payload);
+            const { data } = await api.post<LoginResponse>(USUARIOS_URLS.LOGIN, payload);
 
             console.log('Respuesta del backend:', data);
 
@@ -66,7 +67,7 @@ export const useAuth = () => {
 
         if (refreshToken) {
             try {
-                await api.post(AUTH_URLS.LOGOUT, { refresh: refreshToken });
+                await api.post(USUARIOS_URLS.LOGOUT, { refresh: refreshToken });
             } catch (err) {
                 console.error('Error al cerrar sesión:', err);
             }

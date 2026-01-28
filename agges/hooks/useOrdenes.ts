@@ -1,5 +1,5 @@
 
-"use client"
+{/*"use client"
 import * as React from 'react';
 import api from '@/api/client';
 import { ORDENES_URLS } from '@/api/ordenes/urls';
@@ -84,3 +84,4 @@ export function useOrdenes() {
 }
 
 export default useOrdenes;
+*/}
