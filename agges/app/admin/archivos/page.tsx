@@ -11,7 +11,8 @@ function isArchivo(obj: any): obj is Archivo {
 }
 import type { ClienteSimple, Archivo } from '@/api'
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile, FaUpload } from 'react-icons/fa'
-import { useArchivos, useClientes } from '@/hooks'
+import { useArchivos } from '@/hooks/useArchivos'
+import { useClientes } from '@/hooks/useClientes'
 import ArchivoFormModal from '@/components/ArchivoFormModal'
 
 import ArchivosTable from './ArchivosTable.ignore'

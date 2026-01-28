@@ -6,6 +6,7 @@ export * from './models';
 export * from './urls';
 
 // Apps modularizadas
+export * from './archivo';
 export * from './usuarios';
 export * from './servicios';
 export * from './materiales';

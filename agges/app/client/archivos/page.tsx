@@ -7,7 +7,9 @@ import type { User } from '@/api'
 import ArchivoFormModal from '@/components/ArchivoFormModal'
 import SearchBar from '@/components/common/SearchBar'
 import Pagination from '@/components/common/Pagination'
-import ArchivosTable from './ArchivosTable.ignore'
+import ArchivosTable from './ArchivosTable'
+import type { Archivo } from '@/api/archivo/models'
+import { useArchivos } from '@/hooks/useArchivos'
 
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile } from 'react-icons/fa'
 
