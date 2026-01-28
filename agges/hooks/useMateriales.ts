@@ -1,13 +1,15 @@
-import { useState, useCallback } from 'react'
+"use client"
+import * as React from 'react';
+import { useCallback } from 'react';
 import api from '@/api/client'
 import { MATERIALES_URLS } from '@/api/materiales'
 
 type LoadingState = boolean
 
 export function useMateriales() {
-  const [loading, setLoading] = useState<LoadingState>(false)
+  const [loading, setLoading] = React.useState<LoadingState>(false)
 
-  const listMateriales = useCallback(async () => {
+  const listMateriales = React.useCallback(async () => {
     setLoading(true)
     try {
       const { data } = await api.get(MATERIALES_URLS.LIST)
@@ -17,7 +19,7 @@ export function useMateriales() {
     }
   }, [])
 
-  const getMaterial = useCallback(async (id: number) => {
+  const getMaterial = React.useCallback(async (id: number) => {
     setLoading(true)
     try {
       const { data } = await api.get(MATERIALES_URLS.DETAIL(id))
@@ -27,7 +29,7 @@ export function useMateriales() {
     }
   }, [])
 
-  const createMaterial = useCallback(async (payload: object) => {
+  const createMaterial = React.useCallback(async (payload: object) => {
     setLoading(true)
     try {
       const { data } = await api.post(MATERIALES_URLS.CREATE, payload)
@@ -37,7 +39,7 @@ export function useMateriales() {
     }
   }, [])
 
-  const updateMaterial = useCallback(async (id: number, payload: object) => {
+  const updateMaterial = React.useCallback(async (id: number, payload: object) => {
     setLoading(true)
     try {
       const { data } = await api.put(MATERIALES_URLS.UPDATE(id), payload)
@@ -60,7 +62,7 @@ export function useMateriales() {
   const listSubmateriales = useCallback(async (materialId: number) => {
     setLoading(true)
     try {
-      const { data } = await api.get(MATERIALES_URLS.SUBMATERIALES(materialId))
+      const { data } = await api.get(MATERIALES_URLS.SUBMATERIAL_DETAIL(materialId))
       return data
     } finally {
       setLoading(false)
@@ -77,7 +79,7 @@ export function useMateriales() {
     }
   }, [])
 
-  const listElementosBySubmaterial = useCallback(async (submaterialId: number) => {
+  {/*const listElementosBySubmaterial = useCallback(async (submaterialId: number) => {
     setLoading(true)
     try {
       const { data } = await api.get(MATERIALES_URLS.ELEMENTOS_BY_SUBMATERIAL(submaterialId))
@@ -85,7 +87,7 @@ export function useMateriales() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [])*/}
 
   const getElemento = useCallback(async (id: number) => {
     setLoading(true)

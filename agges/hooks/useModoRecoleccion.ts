@@ -1,11 +1,12 @@
-import { useState, useCallback } from 'react';
+"use client"
+import * as React from 'react';
 import api from '@/api/client';
 import { MODORECOLECCION_URL } from '@/api/modorecoleccion/urls';
 
 export function useModoRecoleccion() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  const listModoRecoleccion = useCallback(async () => {
+  const listModoRecoleccion = React.useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get(MODORECOLECCION_URL);
@@ -14,7 +15,6 @@ export function useModoRecoleccion() {
       setLoading(false);
     }
   }, []);
-
 
   return {
     loading,

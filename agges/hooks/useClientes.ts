@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+"use client"
+import * as React from 'react';
 import { AxiosError } from 'axios';
 import type { ClienteSimple } from '@/api';
 import { api } from '@/api/client';
@@ -11,8 +12,8 @@ import { CLIENTES_URLS } from '@/api';
  * - Obtener lista de clientes (usuarios no-admin)
  */
 export const useClientes = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   /**
    * Obtener lista de clientes (usuarios no-admin)
@@ -21,7 +22,7 @@ export const useClientes = () => {
    * - razonSocial viene del campo username
    * - rut viene del campo email
    */
-  const getClientes = useCallback(async (): Promise<ClienteSimple[]> => {
+  const getClientes = React.useCallback(async (): Promise<ClienteSimple[]> => {
     setLoading(true);
     setError(null);
     try {
