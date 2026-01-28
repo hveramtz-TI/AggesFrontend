@@ -108,7 +108,6 @@ export function useMateriales() {
     deleteMaterial,
     listSubmateriales,
     getSubmaterial,
-    listElementosBySubmaterial,
     getElemento,
   }
 }
