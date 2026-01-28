@@ -1,3 +1,4 @@
+"use client"
 import { useState, useCallback } from 'react';
 import { AxiosError } from 'axios';
 import type { Archivo, ArchivoListResponse, ArchivoUploadData } from '@/api';
@@ -27,11 +28,30 @@ export const useArchivos = () => {
     setError(null);
     try {
       const { data } = await api.get<ArchivoListResponse | Archivo[]>(ARCHIVOS_URLS.SHARED);
-      // Si el backend devuelve un array directo, usarlo
+      // Si el backend devuelve un array directo, filtrar solo los que sean Archivo
       if (Array.isArray(data)) {
-        return data;
+        // Filtra los elementos que tengan todas las propiedades requeridas de Archivo
+        return (data as Archivo[]).filter(
+          (item) =>
+            typeof item === 'object' &&
+            'archivo' in item &&
+            'descripcion' in item &&
+            'tamaño_bytes' in item &&
+            'tipo_mime' in item
+        );
       }
-      return data.results || [];
+      // Si data.results existe, filtra igual
+      if (Array.isArray((data as ArchivoListResponse).results)) {
+        return ((data as ArchivoListResponse).results as Archivo[]).filter(
+          (item) =>
+            typeof item === 'object' &&
+            'archivo' in item &&
+            'descripcion' in item &&
+            'tamaño_bytes' in item &&
+            'tipo_mime' in item
+        );
+      }
+      return [];
     } catch (err) {
       const axiosError = err as AxiosError<{ detail?: string; message?: string }>;
       const errorMessage = axiosError.response?.data?.detail ||

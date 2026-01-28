@@ -1,13 +1,6 @@
 // Type guard para asegurar solo objetos Archivo
-function isArchivo(obj: any): obj is Archivo {
-  return obj && typeof obj === 'object' &&
-    'archivo' in obj &&
-    'tipo_mime' in obj &&
-    'tamaño_bytes' in obj &&
-    'visibilidad' in obj &&
-    'fecha_carga' in obj;
-}
-'use client'
+"use client"
+
 import { useState, useEffect } from 'react'
 import { FaUpload } from 'react-icons/fa'
 import { useArchivos } from '@/hooks'
@@ -18,6 +11,15 @@ import Pagination from '@/components/common/Pagination'
 import ArchivosTable from './ArchivosTable'
 
 import { FaFilePdf, FaFileExcel, FaFileWord, FaFilePowerpoint, FaFile } from 'react-icons/fa'
+
+function isArchivo(obj: any): obj is Archivo {
+  return obj && typeof obj === 'object' &&
+    'archivo' in obj &&
+    'tipo_mime' in obj &&
+    'tamaño_bytes' in obj &&
+    'visibilidad' in obj &&
+    'fecha_carga' in obj;
+}
 
 function getFileIcon(tipo: string) {
   const tipoLower = tipo.toLowerCase()

@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useRef } from 'react';
 import { FaFileUpload } from 'react-icons/fa';
 import type { ArchivoUploadDataExtended } from '@/types';
@@ -133,7 +135,7 @@ const ArchivoFormModal: React.FC<ArchivoFormModalProps> = ({
               <option value="">No compartir</option>
               {clientes && clientes.map(cliente => (
                 <option key={cliente.id} value={cliente.id}>
-                  {cliente.razonSocial} ({cliente.rut})
+                  {cliente.username} ({cliente.rut})
                 </option>
               ))}
             </select>

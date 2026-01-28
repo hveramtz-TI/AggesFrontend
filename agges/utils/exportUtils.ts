@@ -43,10 +43,13 @@ export const exportOnlyConversionSection = async (
         const pageWidth = pdf.internal.pageSize.getWidth()
         const pageHeight = pdf.internal.pageSize.getHeight()
 
-        const imgProps = pdf.getImageProperties(dataUrl)
+        // Solución: obtener dimensiones de la imagen usando un objeto Image
+        const img = new window.Image()
+        img.src = dataUrl
+        await new Promise(resolve => (img.onload = resolve))
 
         const usableWidth = pageWidth - marginX * 2
-        const imgHeight = (imgProps.height * usableWidth) / imgProps.width
+        const imgHeight = (img.height * usableWidth) / img.width
 
         const maxHeight = pageHeight - marginTop - marginBottom
         const finalHeight = Math.min(imgHeight, maxHeight)

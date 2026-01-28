@@ -72,8 +72,6 @@ const ReservasPage = () => {
   }
 
   const handleCreate = () => {
-    console.log('Reserva creada para:', selectedService.title, formData)
-    alert(`Reserva solicitada para: ${selectedService.title}`)
     setIsModalOpen(false)
     setFormData({ fecha: '', observaciones: '', cantidad: '' })
   }

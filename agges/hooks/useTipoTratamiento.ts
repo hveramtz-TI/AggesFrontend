@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from 'react';
 import api from '@/api/client';
 import { TIPOTRATAMIENTO_URL } from '@/api/tipotratamiento/urls';
