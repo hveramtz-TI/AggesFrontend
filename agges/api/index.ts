@@ -9,7 +9,6 @@ export * from './urls';
 export * from './usuarios';
 export * from './servicios';
 export * from './materiales';
-export * from './ordenes';
 export * from './modorecoleccion';
 export * from './tipotratamiento';
 export * from './division';

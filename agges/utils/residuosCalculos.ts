@@ -2,7 +2,7 @@
 import type { OrdenResiduos } from '@/api/reporteria/model';
 import type { Material } from '@/api/materiales/models';
 import type { ChartData } from 'chart.js';
-import { GestionResiduosClienteResponse } from '@/api';
+import { GestionResiduosClienteResponse } from '@/api/reporteria/model';
 
 // Calcula el porcentaje de peso de cada material respecto al total de materiales en todas las órdenes
 export function calcularPorcentajeMateriales(
